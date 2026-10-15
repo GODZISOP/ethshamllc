@@ -714,54 +714,52 @@ export default function App() {
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '36px' }} className="contact-grid-responsive">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '32px', alignItems: 'start' }} className="contact-grid-responsive">
                 {/* Left Card: Coordinates */}
-                <div style={{ background: '#0e1a3f', color: '#fff', padding: '40px', borderRadius: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '24px', color: '#F5C66A' }}>
-                      Contact Information
-                    </h3>
+                <div style={{ background: '#0e1a3f', color: '#fff', padding: '32px 28px', borderRadius: '24px', display: 'flex', flexDirection: 'column' }}>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '22px', color: '#F5C66A' }}>
+                    Contact Information
+                  </h3>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontSize: '0.95rem' }}>
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <MapPin size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</div>
-                          <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px' }}>{companyInfo.address}</div>
-                        </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontSize: '0.93rem' }}>
+                    <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                      <MapPin size={20} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                      <div>
+                        <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</div>
+                        <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px', lineHeight: 1.4 }}>{companyInfo.address}</div>
                       </div>
+                    </div>
 
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <Mail size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
-                          <a href={`mailto:${companyInfo.email}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
-                            {companyInfo.email}
-                          </a>
-                        </div>
+                    <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                      <Mail size={20} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                      <div>
+                        <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
+                        <a href={`mailto:${companyInfo.email}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
+                          {companyInfo.email}
+                        </a>
                       </div>
+                    </div>
 
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <Phone size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone / WhatsApp</div>
-                          <a href={`tel:${companyInfo.phoneRaw}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
-                            {companyInfo.phone}
-                          </a>
-                        </div>
+                    <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                      <Phone size={20} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                      <div>
+                        <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone / WhatsApp</div>
+                        <a href={`tel:${companyInfo.phoneRaw}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
+                          {companyInfo.phone}
+                        </a>
                       </div>
+                    </div>
 
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <Clock size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hours</div>
-                          <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px' }}>{companyInfo.hours}</div>
-                        </div>
+                    <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                      <Clock size={20} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                      <div>
+                        <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hours</div>
+                        <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px' }}>{companyInfo.hours}</div>
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ marginTop: '26px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     <a 
                       href={companyInfo.whatsappUrl} 
                       target="_blank" 
@@ -775,80 +773,78 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right Column: Interactive Form & Map Embed */}
-                <div>
-                  <div style={{ background: '#f8fafc', padding: '36px', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '18px', color: '#0e1a3f' }}>Send Us a Message</h3>
-                    
-                    <form onSubmit={handleFormSubmit} className="modal-form">
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div className="form-group">
-                          <label className="form-label">Name *</label>
-                          <input type="text" required placeholder="What's your name?" className="form-input" />
-                        </div>
-                        <div className="form-group">
-                          <label className="form-label">Email *</label>
-                          <input type="email" required placeholder="What's your email?" className="form-input" />
-                        </div>
-                      </div>
-
+                {/* Right Column: Interactive Form */}
+                <div style={{ background: '#f8fafc', padding: '32px 28px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '18px', color: '#0e1a3f' }}>Send Us a Message</h3>
+                  
+                  <form onSubmit={handleFormSubmit} className="modal-form">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div className="form-group">
-                        <label className="form-label">Date *</label>
+                        <label className="form-label">Name *</label>
+                        <input type="text" required placeholder="What's your name?" className="form-input" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Email *</label>
+                        <input type="email" required placeholder="What's your email?" className="form-input" />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Date *</label>
+                      <input 
+                        type="date" 
+                        required 
+                        value={contactDate}
+                        onChange={(e) => setContactDate(e.target.value)}
+                        className="form-input" 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Message *</label>
+                      <textarea rows={4} placeholder="Write your message..." required className="form-textarea"></textarea>
+                    </div>
+
+                    <div style={{ marginBottom: '20px' }}>
+                      <label className="hts-consent-label">
                         <input 
-                          type="date" 
+                          type="checkbox" 
                           required 
-                          value={contactDate}
-                          onChange={(e) => setContactDate(e.target.value)}
-                          className="form-input" 
+                          checked={consentChecked}
+                          onChange={(e) => setConsentChecked(e.target.checked)}
+                          className="hts-consent-checkbox"
                         />
-                      </div>
+                        <span>
+                          I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
+                        </span>
+                      </label>
+                    </div>
 
-                      <div className="form-group">
-                        <label className="form-label">Message *</label>
-                        <textarea rows={4} placeholder="Write your message..." required className="form-textarea"></textarea>
-                      </div>
+                    <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                      Send Message
+                    </button>
+                  </form>
 
-                      <div style={{ marginBottom: '20px' }}>
-                        <label className="hts-consent-label">
-                          <input 
-                            type="checkbox" 
-                            required 
-                            checked={consentChecked}
-                            onChange={(e) => setConsentChecked(e.target.checked)}
-                            className="hts-consent-checkbox"
-                          />
-                          <span>
-                            I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
-                          </span>
-                        </label>
-                      </div>
-
-                      <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                        Send Message
-                      </button>
-                    </form>
-
-                    {formSubmitted && (
-                      <div style={{ marginTop: '16px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '10px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <CheckCircle2 size={20} color="#059669" />
-                        <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Map Iframe */}
-                  <div className="map-embed-container">
-                    <iframe 
-                      src={companyInfo.mapEmbedUrl}
-                      height="240" 
-                      style={{ width: '100%', border: '0', display: 'block' }} 
-                      allowFullScreen="" 
-                      loading="lazy" 
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Ehthesham Ventures LLC Sheridan Location"
-                    ></iframe>
-                  </div>
+                  {formSubmitted && (
+                    <div style={{ marginTop: '16px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '10px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <CheckCircle2 size={20} color="#059669" />
+                      <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
+                    </div>
+                  )}
                 </div>
+              </div>
+
+              {/* Map Iframe */}
+              <div className="map-embed-container" style={{ marginTop: '32px' }}>
+                <iframe 
+                  src={companyInfo.mapEmbedUrl}
+                  height="260" 
+                  style={{ width: '100%', border: '0', display: 'block' }} 
+                  allowFullScreen="" 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Ehthesham Ventures LLC Sheridan Location"
+                ></iframe>
               </div>
             </div>
           </section>

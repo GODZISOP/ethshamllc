@@ -12,11 +12,11 @@ Official digital catalog and wholesale procurement portal for **MKB VENTURES GLO
   * **Registered Address:** 30 N Gould St # 68445 Sheridan, WY 82801
 
 ## 🛍️ Product Catalog & Collections
-1. **Automotive Essentials** (₨ 25)
-2. **Baby Care Favorites** (₨ 19)
-3. **Beauty and Personal Care** (₨ 13)
-4. **Grocery and Gourmet** (₨ 10)
-5. **Home and Everyday Finds** (₨ 32)
+1. **Automotive Essentials** ($25)
+2. **Baby Care Favorites** ($19)
+3. **Beauty and Personal Care** ($13)
+4. **Grocery and Gourmet** ($10)
+5. **Home and Everyday Finds** ($32)
 
 ## 💻 Tech Stack
 * React 18
