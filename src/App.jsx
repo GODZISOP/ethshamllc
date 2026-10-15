@@ -475,13 +475,16 @@ export default function App() {
                       loading="lazy" 
                     />
                     <div className="category-clean-overlay"></div>
-                    <div className="category-clean-badge">{cat.name}</div>
+                    <div className="category-clean-badge">
+                      <Sparkles size={11} />
+                      <span>Wholesale</span>
+                    </div>
                   </div>
                   <div className="category-clean-info">
                     <h3 className="category-clean-title">{cat.name}</h3>
                     <p className="category-clean-desc">{cat.description}</p>
                     <button className="category-clean-btn">
-                      <span>{cat.buttonText}</span>
+                      <span>{cat.buttonText || 'Browse'}</span>
                       <ArrowRight size={15} />
                     </button>
                   </div>
@@ -1058,7 +1061,10 @@ export default function App() {
                     <div className="category-clean-img-wrap">
                       <img src={cat.image} alt={cat.name} className="category-clean-img" loading="lazy" />
                       <div className="category-clean-overlay"></div>
-                      <div className="category-clean-badge">{cat.name}</div>
+                      <div className="category-clean-badge">
+                        <Sparkles size={11} />
+                        <span>Wholesale</span>
+                      </div>
                     </div>
                     <div className="category-clean-info">
                       <h3 className="category-clean-title">{cat.name}</h3>
@@ -1283,122 +1289,206 @@ export default function App() {
          ========================================================================= */}
       {activeTab === 'contact' && (
         <main className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
+          <div className="contact-page-container">
             <div className="section-header-center" style={{ marginBottom: '40px' }}>
               <span className="hf-eyebrow-badge">CONNECT WITH US</span>
               <h1 className="section-title">Contact Us</h1>
-              <p style={{ color: '#64748b', maxWidth: '600px', margin: '10px auto 0', fontSize: '1.05rem' }}>
-                Contact us about products, sourcing, or supplier inquiries.
+              <p style={{ color: '#64748b', maxWidth: '620px', margin: '10px auto 0', fontSize: '1.05rem', lineHeight: 1.6 }}>
+                Contact us about wholesale orders, authentic product sourcing, or supplier partnership inquiries.
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '40px', marginBottom: '48px' }} className="contact-grid-responsive">
+            <div className="contact-page-card-grid">
               {/* Form Side */}
-              <div style={{ background: '#ffffff', padding: '40px', borderRadius: '24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: '#0e1a3f', marginBottom: '20px' }}>
-                  Get in Touch
-                </h2>
-
-                <form onSubmit={handleFormSubmit} className="modal-form">
-                  <div className="form-group">
-                    <label className="form-label">Name *</label>
-                    <input type="text" required placeholder="What's your name?" className="form-input" />
+              <div className="contact-form-card">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
+                      <Send size={18} />
+                    </div>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: '#0e1a3f', margin: 0 }}>
+                      Get in Touch
+                    </h2>
                   </div>
+                  <p style={{ color: '#64748b', fontSize: '0.92rem', marginBottom: '24px' }}>
+                    Fill out the form below and our sourcing desk will reply with full catalog and tier details.
+                  </p>
 
-                  <div className="form-group">
-                    <label className="form-label">Email *</label>
-                    <input type="email" required placeholder="What's your email?" className="form-input" />
-                  </div>
+                  <form onSubmit={handleFormSubmit} className="modal-form">
+                    <div className="contact-form-row-2col">
+                      <div className="form-group">
+                        <label className="form-label">Full Name *</label>
+                        <input type="text" required placeholder="What's your name?" className="form-input" />
+                      </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Date *</label>
-                    <input 
-                      type="date" 
-                      required 
-                      value={contactDate}
-                      onChange={(e) => setContactDate(e.target.value)}
-                      className="form-input" 
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label className="form-label">Email Address *</label>
+                        <input type="email" required placeholder="What's your email?" className="form-input" />
+                      </div>
+                    </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Message *</label>
-                    <textarea rows={4} placeholder="Write your message..." required className="form-textarea"></textarea>
-                  </div>
+                    <div className="contact-form-row-2col">
+                      <div className="form-group">
+                        <label className="form-label">Inquiry Date *</label>
+                        <input 
+                          type="date" 
+                          required 
+                          value={contactDate}
+                          onChange={(e) => setContactDate(e.target.value)}
+                          className="form-input" 
+                        />
+                      </div>
 
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="hts-consent-label">
-                      <input 
-                        type="checkbox" 
-                        required 
-                        checked={consentChecked}
-                        onChange={(e) => setConsentChecked(e.target.checked)}
-                        className="hts-consent-checkbox"
-                      />
-                      <span>
-                        I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
-                      </span>
-                    </label>
-                  </div>
+                      <div className="form-group">
+                        <label className="form-label">Phone / WhatsApp (Optional)</label>
+                        <input type="tel" placeholder="+1 (555) 000-0000" className="form-input" />
+                      </div>
+                    </div>
 
-                  <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                    Send Message
-                  </button>
-                </form>
+                    <div className="form-group">
+                      <label className="form-label">Message / Sourcing Requirements *</label>
+                      <textarea rows={4} placeholder="Tell us about the products, quantities, or resale questions you have..." required className="form-textarea"></textarea>
+                    </div>
 
-                {formSubmitted && (
-                  <div style={{ marginTop: '16px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '10px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <CheckCircle2 size={20} color="#059669" />
-                    <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
-                  </div>
-                )}
+                    <div style={{ marginBottom: '8px' }}>
+                      <label className="hts-consent-label">
+                        <input 
+                          type="checkbox" 
+                          required 
+                          checked={consentChecked}
+                          onChange={(e) => setConsentChecked(e.target.checked)}
+                          className="hts-consent-checkbox"
+                        />
+                        <span>
+                          I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
+                        </span>
+                      </label>
+                    </div>
+
+                    <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '1rem' }}>
+                      <Send size={16} />
+                      <span>Send Message</span>
+                    </button>
+                  </form>
+
+                  {formSubmitted && (
+                    <div style={{ marginTop: '18px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '12px', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #a7f3d0' }}>
+                      <CheckCircle2 size={20} color="#059669" />
+                      <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Coordinates Side */}
-              <div>
-                <div style={{ background: '#0e1a3f', color: '#ffffff', padding: '36px', borderRadius: '24px', marginBottom: '24px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#F5C66A', marginBottom: '20px' }}>
-                    Company Address & Hours
+              <div className="contact-info-column">
+                <div className="contact-navy-card">
+                  <h3 className="contact-navy-card-title">
+                    <Building2 size={22} color="#F5C66A" />
+                    <span>Company Address & Hours</span>
                   </h3>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div>
-                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</div>
-                      <p style={{ fontWeight: '600', fontSize: '1.05rem', marginTop: '4px' }}>{companyInfo.address}</p>
+                  <div className="contact-item-row">
+                    <div className="contact-item-icon-pill">
+                      <MapPin size={20} />
                     </div>
-
-                    <div>
-                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hours</div>
-                      <p style={{ fontWeight: '600', fontSize: '1.05rem', marginTop: '4px' }}>{companyInfo.hours}</p>
+                    <div className="contact-item-content">
+                      <div className="contact-item-label">Corporate Address</div>
+                      <p className="contact-item-value">{companyInfo.address}</p>
                     </div>
+                  </div>
 
-                    <div>
-                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
-                      <a href={`mailto:${companyInfo.email}`} style={{ color: '#F5C66A', fontWeight: '600', fontSize: '1.05rem', textDecoration: 'none', marginTop: '4px', display: 'block' }}>
+                  <div className="contact-item-row">
+                    <div className="contact-item-icon-pill">
+                      <Clock size={20} />
+                    </div>
+                    <div className="contact-item-content">
+                      <div className="contact-item-label">Operating Hours</div>
+                      <p className="contact-item-value">{companyInfo.hours}</p>
+                    </div>
+                  </div>
+
+                  <div className="contact-item-row">
+                    <div className="contact-item-icon-pill">
+                      <Mail size={20} />
+                    </div>
+                    <div className="contact-item-content">
+                      <div className="contact-item-label">Corporate Email</div>
+                      <a href={`mailto:${companyInfo.email}`} className="contact-item-link">
                         {companyInfo.email}
                       </a>
                     </div>
+                  </div>
 
-                    <div>
-                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number</div>
-                      <a href={`tel:${companyInfo.phoneRaw}`} style={{ color: '#F5C66A', fontWeight: '600', fontSize: '1.05rem', textDecoration: 'none', marginTop: '4px', display: 'block' }}>
+                  <div className="contact-item-row">
+                    <div className="contact-item-icon-pill">
+                      <Phone size={20} />
+                    </div>
+                    <div className="contact-item-content">
+                      <div className="contact-item-label">Phone & WhatsApp</div>
+                      <a href={`tel:${companyInfo.phoneRaw}`} className="contact-item-link">
                         {companyInfo.phone}
                       </a>
                     </div>
                   </div>
+
+                  <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+                    <a 
+                      href={companyInfo.whatsappUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="btn-cart-whatsapp"
+                      style={{ justifyContent: 'center', width: '100%' }}
+                    >
+                      <MessageSquare size={17} />
+                      <span>Chat Directly on WhatsApp</span>
+                    </a>
+                  </div>
                 </div>
 
                 {/* Google Maps Embed */}
-                <div className="map-embed-container">
+                <div className="contact-map-wrapper">
                   <iframe 
                     src={companyInfo.mapEmbedUrl}
-                    height="320" 
-                    style={{ width: '100%', border: '0', display: 'block' }} 
+                    className="contact-map-iframe"
                     allowFullScreen="" 
                     loading="lazy" 
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Ehthesham Ventures LLC Location Map"
                   ></iframe>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Assurance Strip */}
+            <div className="contact-trust-strip">
+              <div className="contact-trust-item">
+                <div className="contact-trust-icon">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <div className="contact-trust-title">Verified U.S. Entity</div>
+                  <div className="contact-trust-sub">Wyoming registered wholesale trading LLC with verified procurement.</div>
+                </div>
+              </div>
+
+              <div className="contact-trust-item">
+                <div className="contact-trust-icon">
+                  <Truck size={24} />
+                </div>
+                <div>
+                  <div className="contact-trust-title">Fast Wholesale Dispatch</div>
+                  <div className="contact-trust-sub">Compliant shipment preparation for Amazon FBA & commercial distribution.</div>
+                </div>
+              </div>
+
+              <div className="contact-trust-item">
+                <div className="contact-trust-icon">
+                  <Award size={24} />
+                </div>
+                <div>
+                  <div className="contact-trust-title">Authentic Brand Invoices</div>
+                  <div className="contact-trust-sub">Genuine products backed by full resale documentation & authorization.</div>
                 </div>
               </div>
             </div>
