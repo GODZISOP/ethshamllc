@@ -4,17 +4,17 @@ import {
   Send, ExternalLink, ShieldCheck, Truck, Award,
   X, MessageSquare, Layers, Building2, ShoppingCart, Menu as MenuIcon,
   Plus, Minus, Trash2, ShoppingBag, Eye, ArrowLeft, Check,
-  LayoutGrid, Sparkles, ChevronDown, Package, Star
+  LayoutGrid, Sparkles, ChevronDown, Package, Star, Calendar, Clock
 } from 'lucide-react';
-import { categories, products } from './data/products';
-import logoImg from './images/mkb-logo.svg';
+import { companyInfo, categories, products } from './data/products';
+import logoImg from './images/ehthesham-logo.svg';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('default');
-  const [modalType, setModalType] = useState(null); // 'partner', 'quote', 'supplier', 'checkout', null
+  const [modalType, setModalType] = useState(null); // 'partner', 'quote', 'checkout', null
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -24,7 +24,7 @@ export default function App() {
   // Cart & Product Detail state
   const [cart, setCart] = useState(() => {
     try {
-      const saved = localStorage.getItem('mkb_cart');
+      const saved = localStorage.getItem('ehthesham_cart');
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
       return [];
@@ -36,10 +36,14 @@ export default function App() {
   const [activeDetailTab, setActiveDetailTab] = useState('description');
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Contact form specific state
+  const [contactDate, setContactDate] = useState('');
+  const [consentChecked, setConsentChecked] = useState(false);
+
   // Sync cart to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('mkb_cart', JSON.stringify(cart));
+      localStorage.setItem('ehthesham_cart', JSON.stringify(cart));
     } catch (e) {}
   }, [cart]);
 
@@ -147,15 +151,6 @@ export default function App() {
   };
 
   const navigateTo = (tabName, categoryId = null) => {
-    if (tabName === 'contact') {
-      setActiveTab('home');
-      setMobileMenuOpen(false);
-      setTimeout(() => {
-        const el = document.getElementById('contact-section');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 60);
-      return;
-    }
     setActiveTab(tabName);
     if (categoryId) {
       setSelectedCategory(categoryId);
@@ -166,8 +161,8 @@ export default function App() {
 
   const handleCategoryClick = (catId) => {
     setSelectedCategory(catId);
-    if (activeTab !== 'home') {
-      setActiveTab('home');
+    if (activeTab !== 'home' && activeTab !== 'shop') {
+      setActiveTab('shop');
     }
     setMobileMenuOpen(false);
     setTimeout(() => {
@@ -179,16 +174,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f7f9] text-[#1e293b]">
+    <div className="min-h-screen bg-[#fbf8f3] text-[#111827]">
       {/* 2-TIER MODERN STICKY HEADER */}
       <header className="site-header">
         {/* UPPER TIER: MAIN NAVIGATION */}
         <div className="main-nav">
           <div className="nav-brand" onClick={() => navigateTo('home')} style={{ cursor: 'pointer' }}>
-            <img src={logoImg} alt="MKB Ventures Global LLC Logo" className="brand-logo-img" />
+            <img src={logoImg} alt="Ehthesham Ventures LLC Logo" className="brand-logo-img" />
             <div>
-              <div className="brand-title">MKB Ventures Global LLC</div>
-              <div className="brand-subtitle">Automotive, Baby Care, Beauty, Gourmet & Home Essentials</div>
+              <div className="brand-title">{companyInfo.name}</div>
+              <div className="brand-subtitle">{companyInfo.tagline}</div>
             </div>
           </div>
 
@@ -216,23 +211,23 @@ export default function App() {
                   className={`nav-link ${activeTab === 'business' ? 'active' : ''}`}
                   onClick={() => navigateTo('business')}
                 >
-                  Our Services
+                  Our Business
                 </button>
               </li>
               <li>
                 <button 
-                  className={`nav-link ${activeTab === 'partnerships' ? 'active' : ''}`}
-                  onClick={() => navigateTo('partnerships')}
+                  className={`nav-link ${activeTab === 'categories' ? 'active' : ''}`}
+                  onClick={() => navigateTo('categories')}
                 >
-                  Wholesale Partnerships
+                  Product Categories
                 </button>
               </li>
               <li>
                 <button 
-                  className={`nav-link ${activeTab === 'supplier' ? 'active' : ''}`}
-                  onClick={() => navigateTo('supplier')}
+                  className={`nav-link ${activeTab === 'shop' ? 'active' : ''}`}
+                  onClick={() => navigateTo('shop')}
                 >
-                  Supplier Inquiries
+                  Shop
                 </button>
               </li>
               <li>
@@ -264,7 +259,7 @@ export default function App() {
               className="btn-nav-partner"
               onClick={() => handleOpenPartner('partner')}
             >
-              <span>Partner Today</span>
+              <span>Partner</span>
               <ArrowRight size={16} />
             </button>
 
@@ -278,13 +273,13 @@ export default function App() {
           </div>
         </div>
 
-        {/* LOWER TIER: THE BLUE LINE (PRODUCTS & CATEGORIES BAR) */}
+        {/* LOWER TIER: THE BLUE LINE (PRODUCTS & CATEGORIES SUB-BAR) */}
         <div className="products-blue-bar">
           <div className="blue-bar-content">
             {/* All Products master pill */}
             <div className="blue-bar-categories">
               <button 
-                className={`blue-cat-btn all-cat-btn ${selectedCategory === 'all' && activeTab === 'home' ? 'active' : ''}`}
+                className={`blue-cat-btn all-cat-btn ${selectedCategory === 'all' && (activeTab === 'home' || activeTab === 'shop') ? 'active' : ''}`}
                 onClick={() => handleCategoryClick('all')}
               >
                 <LayoutGrid size={15} />
@@ -296,7 +291,7 @@ export default function App() {
 
               {/* Individual Product Categories in the Blue Line */}
               {categories.map((cat) => {
-                const isActive = selectedCategory === cat.id && activeTab === 'home';
+                const isActive = selectedCategory === cat.id && (activeTab === 'home' || activeTab === 'shop');
                 return (
                   <button
                     key={cat.id}
@@ -309,16 +304,16 @@ export default function App() {
               })}
             </div>
 
-            {/* Right side quick contact & direct trading desk info */}
+            {/* Right side quick contact & direct sourcing desk info */}
             <div className="blue-bar-perks">
               <span className="blue-perk-item">
                 <Truck size={14} />
-                <span>Fast Global Dispatch</span>
+                <span>Fast Wholesale Dispatch</span>
               </span>
               <span className="blue-perk-divider">•</span>
-              <a href="tel:+966507415829" className="blue-perk-phone">
+              <a href={`tel:${companyInfo.phoneRaw}`} className="blue-perk-phone">
                 <Phone size={13} />
-                <span>(+966) 50 741 5829</span>
+                <span>{companyInfo.phone}</span>
               </a>
             </div>
           </div>
@@ -349,9 +344,9 @@ export default function App() {
             {[
               { key: 'home', label: 'Home' },
               { key: 'about', label: 'About Us' },
-              { key: 'business', label: 'Our Services' },
-              { key: 'partnerships', label: 'Wholesale Partnerships' },
-              { key: 'supplier', label: 'Supplier Inquiries' },
+              { key: 'business', label: 'Our Business' },
+              { key: 'categories', label: 'Product Categories' },
+              { key: 'shop', label: 'Shop' },
               { key: 'contact', label: 'Contact Us' }
             ].map(item => (
               <button
@@ -368,16 +363,16 @@ export default function App() {
             <div className="mobile-section-label">Product Categories</div>
             <button
               onClick={() => handleCategoryClick('all')}
-              className={`mobile-nav-link ${selectedCategory === 'all' && activeTab === 'home' ? 'active' : ''}`}
+              className={`mobile-nav-link ${selectedCategory === 'all' && (activeTab === 'home' || activeTab === 'shop') ? 'active' : ''}`}
             >
               <LayoutGrid size={16} />
-              <span>All Products ({products.length})</span>
+              <span>All Categories ({products.length})</span>
             </button>
             {categories.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`mobile-nav-link ${selectedCategory === cat.id && activeTab === 'home' ? 'active' : ''}`}
+                className={`mobile-nav-link ${selectedCategory === cat.id && (activeTab === 'home' || activeTab === 'shop') ? 'active' : ''}`}
               >
                 <span>{cat.name}</span>
               </button>
@@ -393,24 +388,46 @@ export default function App() {
                 handleOpenPartner('partner');
               }}
             >
-              Partner Today
+              Partner with Us
             </button>
           </div>
         </div>
       )}
 
-      {/* VIEW: HOME PAGE */}
+      {/* =========================================================================
+          VIEW: HOME PAGE (EXACT REPLICA OF EHTHESHAM VENTURES LLC HOMEPAGE)
+         ========================================================================= */}
       {activeTab === 'home' && (
         <main>
-          {/* HERO SECTION - SHOP WITH DISTINCTION */}
-          <section className="hero-section">
-            <div className="hero-overlay"></div>
+          {/* HERO SECTION WITH VIDEO BACKGROUND & ORIGINAL TEXT */}
+          <section className="hero-section" style={{ minHeight: '560px' }}>
+            <div className="hero-video-wrapper">
+              <video 
+                className="hero-video-bg"
+                autoPlay 
+                muted 
+                loop 
+                playsInline
+                poster="https://images.unsplash.com/photo-1559827291-72ee739d0d9a?auto=format&fit=crop&w=2200&q=85"
+              >
+                <source src={companyInfo.videoUrl} type="video/mp4" />
+              </video>
+            </div>
+            
+            <div className="hero-overlay" style={{
+              background: 'linear-gradient(90deg, rgba(14, 26, 63, 0.90) 0%, rgba(30, 58, 138, 0.80) 50%, rgba(14, 26, 63, 0.65) 100%)'
+            }}></div>
+            
             <div className="hero-container">
               <div className="hero-content">
-                <div className="hero-pretitle">MKB VENTURES GLOBAL LLC</div>
-                <h1 className="hero-title">Quality Products Online</h1>
-                <p className="hero-description">
-                  Quality finds, easy shopping, and dependable service from MKB Ventures Global LLC.
+                <div className="hero-pretitle-badge">
+                  {companyInfo.heroSubtitle}
+                </div>
+                <h1 className="hero-title">
+                  {companyInfo.heroTitle}
+                </h1>
+                <p className="hero-description" style={{ fontSize: '1.15rem', maxWidth: '640px' }}>
+                  {companyInfo.heroDescription}
                 </p>
                 <div className="hero-actions">
                   <button 
@@ -420,26 +437,26 @@ export default function App() {
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }}
                   >
-                    Shop Now
+                    View Categories
                   </button>
                   <button 
                     className="btn-hero-outline"
-                    onClick={() => {
-                      const el = document.getElementById('categories-section');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }}
+                    onClick={() => navigateTo('contact')}
                   >
-                    Explore Categories
+                    Contact Us
                   </button>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* SECTION 1: SHOP EVERYDAY ESSENTIALS (EXACT SCREENSHOT LAYOUT) */}
-          <section id="categories-section" className="section-wrapper essentials-section">
-            <div className="section-header-left">
-              <h2 className="section-heading-clean">Shop Everyday Essentials</h2>
+          {/* SECTION: PRODUCT CATEGORIES (COVER CARDS) */}
+          <section id="categories-section" className="section-wrapper essentials-section" style={{ padding: '70px 24px' }}>
+            <div className="section-header-left" style={{ marginBottom: '36px' }}>
+              <div style={{ color: '#D97706', fontSize: '0.85rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                Shop our categories
+              </div>
+              <h2 className="section-heading-clean">Product Categories</h2>
             </div>
 
             <div className="categories-grid-four">
@@ -448,357 +465,386 @@ export default function App() {
                   key={cat.id} 
                   className="category-card-clean"
                   onClick={() => handleCategoryClick(cat.id)}
+                  style={{ cursor: 'pointer' }}
                 >
-                  <div className="category-img-container">
+                  <div className="category-clean-img-wrap">
                     <img 
                       src={cat.image} 
                       alt={cat.name} 
-                      className="category-img-clean" 
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="category-meta-clean">
-                    <h3 className="category-name-clean">{cat.name}</h3>
-                    <button 
-                      className="category-link-clean"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCategoryClick(cat.id);
-                      }}
-                    >
-                      {cat.buttonText}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* SECTION 2: FEATURED PRODUCTS (EXACT SCREENSHOT LAYOUT) */}
-          <section id="featured-products-section" className="section-wrapper featured-section">
-            <div className="section-header-center">
-              <h2 className="section-heading-clean" style={{ textAlign: 'center' }}>Featured Products</h2>
-            </div>
-
-            <div className="featured-grid-four">
-              {products.map((prod) => (
-                <div key={prod.id} className="clean-product-card">
-                  <div 
-                    className="clean-product-img-wrap"
-                    onClick={() => viewProductDetail(prod)}
-                  >
-                    <img src={prod.image} alt={prod.name} className="clean-product-img" loading="lazy" />
-                  </div>
-                  <div className="clean-product-body">
-                    <h3 className="clean-product-title" onClick={() => viewProductDetail(prod)}>
-                      {prod.name}
-                    </h3>
-                    <div className="clean-product-price">
-                      {prod.price}
-                    </div>
-                    <button 
-                      className="btn-clean-add-cart"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(prod, 1, true);
-                      }}
-                    >
-                      Add to cart
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Centered Shop All Products Pill Button */}
-            <div className="shop-all-container">
-              <button 
-                className="btn-shop-all-pill"
-                onClick={() => {
-                  setSelectedCategory('all');
-                  const el = document.getElementById('featured-products-section');
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-              >
-                Shop All Products
-              </button>
-            </div>
-          </section>
-
-          {/* THE MKB VENTURES DISTINCTION EXPERIENCE (BENTO SHOWPIECE) */}
-          <section className="hf-experience-section">
-            <div className="section-wrapper">
-              <div className="section-header-center">
-                <span className="hf-eyebrow-badge">THE MKB VENTURES STANDARD</span>
-                <h2 className="section-heading-clean" style={{ textAlign: 'center', marginTop: '10px' }}>
-                  Crafted For Everyday Living, Backed By Quality Sourcing
-                </h2>
-                <p className="hf-section-subtitle">
-                  We hand-select each collection for practical elegance, enduring durability, and dependable quality.
-                </p>
-              </div>
-
-              {/* Bento Grid */}
-              <div className="hf-bento-grid">
-                {/* Bento Card 1: Large Editorial Hero */}
-                <div className="hf-bento-card hf-bento-hero">
-                  <div className="hf-bento-img-wrap">
-                    <img 
-                      src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80" 
-                      alt="Curated Modern Living" 
-                      className="hf-bento-img" 
+                      className="category-clean-img" 
                       loading="lazy" 
                     />
-                    <div className="hf-bento-overlay"></div>
+                    <div className="category-clean-overlay"></div>
+                    <div className="category-clean-badge">{cat.name}</div>
                   </div>
-                  <div className="hf-bento-hero-content">
-                    <span className="hf-gold-pill">AUTHENTIC CURATION</span>
-                    <h3 className="hf-bento-hero-title">Direct Workshop Sourcing</h3>
-                    <p className="hf-bento-hero-desc">
-                      Every piece is procured directly from certified suppliers and precision manufacturers, guaranteeing authentic materials and transparent pricing.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bento Card 2: Priority Express Dispatch */}
-                <div className="hf-bento-card hf-bento-feature">
-                  <div className="hf-bento-icon-box">
-                    <Truck size={24} color="#c59b3f" />
-                  </div>
-                  <h3 className="hf-bento-feature-title">Insured Express Dispatch</h3>
-                  <p className="hf-bento-feature-desc">
-                    Every order is individually inspected, protective-foam boxed, and dispatched with live tracking to ensure pristine doorstep arrival.
-                  </p>
-                  <div className="hf-bento-stat">
-                    <strong>24 - 48h</strong>
-                    <span>Fast regional dispatch</span>
+                  <div className="category-clean-info">
+                    <h3 className="category-clean-title">{cat.name}</h3>
+                    <p className="category-clean-desc">{cat.description}</p>
+                    <button className="category-clean-btn">
+                      <span>{cat.buttonText}</span>
+                      <ArrowRight size={15} />
+                    </button>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
 
-                {/* Bento Card 3: Quality Guarantee */}
-                <div className="hf-bento-card hf-bento-feature">
-                  <div className="hf-bento-icon-box">
-                    <ShieldCheck size={24} color="#c59b3f" />
+          {/* SECTION: SHOP OUR CATEGORIES (LIVE PRODUCTS SHOWCASE) */}
+          <section id="featured-products-section" className="section-wrapper" style={{ padding: '60px 24px', background: '#ffffff' }}>
+            <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '20px', marginBottom: '32px' }}>
+                <div>
+                  <div style={{ color: '#D97706', fontSize: '0.82rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Authentic Sourced Catalog
                   </div>
-                  <h3 className="hf-bento-feature-title">100% Quality Guaranteed</h3>
-                  <p className="hf-bento-feature-desc">
-                    From automotive tools to skincare and gourmet foods, our products undergo rigorous QC before reaching our catalog.
-                  </p>
-                  <div className="hf-bento-stat">
-                    <strong>1-Year</strong>
-                    <span>Manufacturer warranty support</span>
-                  </div>
+                  <h2 className="section-heading-clean">Shop Our Categories</h2>
                 </div>
 
-                {/* Bento Card 4: Executive Customer Desk */}
-                <div className="hf-bento-card hf-bento-feature hf-bento-wide">
-                  <div className="hf-bento-icon-box">
-                    <Phone size={24} color="#c59b3f" />
+                {/* Search & Sort Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative' }}>
+                    <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input 
+                      type="text" 
+                      placeholder="Search wholesale products..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        padding: '9px 14px 9px 36px',
+                        borderRadius: '30px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.88rem',
+                        outline: 'none',
+                        width: '240px'
+                      }}
+                    />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <h3 className="hf-bento-feature-title">Direct Concierge & Trade Desk</h3>
-                    <p className="hf-bento-feature-desc">
-                      Have questions or require wholesale quantity quotes? Connect directly with our executive trade team via WhatsApp or phone.
-                    </p>
-                  </div>
-                  <a 
-                    href="https://wa.me/966595822656" 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    className="hf-btn-whatsapp-pill"
+
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    style={{
+                      padding: '9px 14px',
+                      borderRadius: '30px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.88rem',
+                      background: '#fff',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
                   >
-                    <span>WhatsApp (+966) 59 582 2656</span>
-                  </a>
+                    <option value="default">Default sorting</option>
+                    <option value="price-low">Sort by price: low to high</option>
+                    <option value="price-high">Sort by price: high to low</option>
+                    <option value="rating">Sort by rating</option>
+                  </select>
                 </div>
               </div>
 
-              {/* CLIENT TESTIMONIALS STRIP */}
-              <div className="hf-testimonials-wrap">
-                <div className="hf-testimonials-header">
-                  <span className="hf-gold-pill">VERIFIED EXPERIENCES</span>
-                  <h3 className="hf-testimonials-title">Trusted By Discerning Customers & Retailers</h3>
+              {/* Products Grid */}
+              <div className="products-grid">
+                {filteredProducts.map((prod) => (
+                  <div 
+                    key={prod.id} 
+                    className="product-card"
+                    onClick={() => viewProductDetail(prod)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="product-img-wrap">
+                      <img src={prod.image} alt={prod.name} className="product-img" loading="lazy" />
+                      <span className="product-badge">{prod.categoryName}</span>
+                    </div>
+
+                    <div className="product-body">
+                      <div className="product-header-row">
+                        <span className="product-sku">SKU: {prod.sku}</span>
+                        <span className="stock-tag">● {prod.availability}</span>
+                      </div>
+
+                      <h3 className="product-title">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); viewProductDetail(prod); }}
+                          className="product-title-btn"
+                        >
+                          {prod.name}
+                        </button>
+                      </h3>
+
+                      <div className="product-price-box">
+                        <span className="product-price-val">{prod.price}</span>
+                        <span className="product-price-sub">Wholesale Sourced</span>
+                      </div>
+
+                      <p className="product-excerpt">{prod.description}</p>
+
+                      <div className="product-actions-row">
+                        <button 
+                          className="btn-add-cart"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(prod, 1, true);
+                          }}
+                        >
+                          <ShoppingCart size={15} />
+                          <span>Add to cart</span>
+                        </button>
+
+                        <button 
+                          className="btn-view-details"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            viewProductDetail(prod);
+                          }}
+                        >
+                          <Eye size={15} />
+                          <span>View Details</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <button 
+                  className="btn-hero-primary"
+                  onClick={() => navigateTo('shop')}
+                  style={{ padding: '12px 32px' }}
+                >
+                  View All Product Categories
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION: OUR SOURCING & AUTHENTICITY PILLARS */}
+          <section className="section-wrapper" style={{ padding: '70px 24px', background: '#f8fafc' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <div className="section-header-center" style={{ marginBottom: '48px' }}>
+                <div style={{ color: '#D97706', fontSize: '0.85rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Legitimate Sourcing
+                </div>
+                <h2 className="section-heading-clean">{companyInfo.sourcingTitle}</h2>
+                <p style={{ color: '#64748b', maxWidth: '720px', margin: '12px auto 0', fontSize: '1.05rem', lineHeight: '1.7' }}>
+                  {companyInfo.sourcingDescription}
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+                {/* Pillar 1: Product Authenticity */}
+                <div className="sourcing-pillar-card">
+                  <img 
+                    src="https://images.unsplash.com/photo-1695561115667-c2e975c7cf22?q=85&w=1200&h=600&fit=crop" 
+                    alt="Product Authenticity" 
+                    className="sourcing-pillar-img"
+                  />
+                  <div className="sourcing-pillar-body">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <ShieldCheck size={22} color="#1e3a8a" />
+                      <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#0e1a3f' }}>Product Authenticity</h3>
+                    </div>
+                    <p style={{ color: '#475569', fontSize: '0.98rem', lineHeight: '1.65' }}>
+                      We focus on authentic products and careful sourcing for our wholesale business, guaranteeing verified supply chains for every category we distribute.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="hf-testimonials-grid">
-                  <div className="hf-testimonial-card">
-                    <div className="hf-stars-row">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={15} fill="#c59b3f" color="#c59b3f" />
-                      ))}
+                {/* Pillar 2: Resale Channels */}
+                <div className="sourcing-pillar-card">
+                  <img 
+                    src="https://images.unsplash.com/photo-1524221629551-6dd14def5ffd?q=85&w=1200&h=600&fit=crop" 
+                    alt="Resale Channels" 
+                    className="sourcing-pillar-img"
+                  />
+                  <div className="sourcing-pillar-body">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <Layers size={22} color="#1e3a8a" />
+                      <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#0e1a3f' }}>Resale Channels</h3>
                     </div>
-                    <p className="hf-testimonial-quote">
-                      "The Automotive Essentials kit is comprehensive, heavy-duty, and arrived promptly. Exactly what our fleet needed."
+                    <p style={{ color: '#475569', fontSize: '0.98rem', lineHeight: '1.65' }}>
+                      Our approach supports resale on Amazon and other e-commerce platforms, offering proper invoicing, authorization support, and packaging readiness.
                     </p>
-                    <div className="hf-testimonial-author">
-                      <strong>Adil Al-Ghamdi</strong>
-                      <span>Verified Buyer • Riyadh, KSA</span>
-                    </div>
-                  </div>
-
-                  <div className="hf-testimonial-card">
-                    <div className="hf-stars-row">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={15} fill="#c59b3f" color="#c59b3f" />
-                      ))}
-                    </div>
-                    <p className="hf-testimonial-quote">
-                      "The Home and Everyday Finds collection added great utility and modern aesthetic to our home. Packaging was rock solid with zero transit wear."
-                    </p>
-                    <div className="hf-testimonial-author">
-                      <strong>Amina Tariq</strong>
-                      <span>Verified Customer</span>
-                    </div>
-                  </div>
-
-                  <div className="hf-testimonial-card">
-                    <div className="hf-stars-row">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={15} fill="#c59b3f" color="#c59b3f" />
-                      ))}
-                    </div>
-                    <p className="hf-testimonial-quote">
-                      "We placed a commercial order for Beauty and Baby Care products. Quality is exceptional, and MKB Ventures Global LLC's communication was 10/10."
-                    </p>
-                    <div className="hf-testimonial-author">
-                      <strong>Kamran Malik</strong>
-                      <span>Retail Wholesale Partner</span>
-                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* VIP COMMERCIAL & INQUIRY BANNER */}
-              <div className="hf-vip-banner">
-                <div className="hf-vip-content">
-                  <span className="hf-vip-badge">DIRECT COMMERCIAL DESK</span>
-                  <h3 className="hf-vip-title">Looking For Custom Orders or Wholesale Partnerships?</h3>
-                  <p className="hf-vip-desc">
-                    Whether procuring for retail chains, corporate gifting, or individual bespoke orders, our trade desk delivers tailored solutions.
-                  </p>
-                </div>
-                <div className="hf-vip-actions">
-                  <a 
-                    href="https://wa.me/966595822656" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="hf-vip-btn-gold"
-                  >
-                    <span>Instant WhatsApp Chat</span>
-                  </a>
-                  <a 
-                    href="mailto:info@mkbventuresgloballlc.com"
-                    className="hf-vip-btn-outline"
-                  >
-                    <span>Email info@mkbventuresgloballlc.com</span>
-                  </a>
+              {/* OUR COMMITMENT BANNER (FROM LIVE HOMEPAGE) */}
+              <div className="commitment-banner">
+                <div style={{ position: 'relative', zIndex: 2, maxWidth: '820px' }}>
+                  <div style={{ color: '#F5C66A', fontSize: '0.82rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                    {companyInfo.commitmentTitle}
+                  </div>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', lineHeight: '1.4', marginBottom: '16px', color: '#ffffff' }}>
+                    "{companyInfo.commitmentQuote}"
+                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', marginTop: '24px' }}>
+                    <button 
+                      className="btn-hero-primary"
+                      onClick={() => handleOpenPartner('partner')}
+                    >
+                      Partner with Ehthesham Ventures
+                    </button>
+                    <a 
+                      href={companyInfo.whatsappUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      style={{ color: '#F5C66A', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <MessageSquare size={18} />
+                      <span>Direct WhatsApp Desk: {companyInfo.phone}</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* SECTION: CONTACT MKB VENTURES GLOBAL LLC (ON HOME PAGE) */}
-          <section id="contact-section" className="section-wrapper" style={{ padding: '60px 24px 70px' }}>
-            <div style={{ maxWidth: '980px', margin: '0 auto' }}>
-              <div className="section-header-center">
-                <span className="hf-eyebrow-badge">GET IN TOUCH</span>
-                <h2 className="section-heading-clean" style={{ textAlign: 'center', marginTop: '10px' }}>
-                  Contact MKB Ventures Global LLC
-                </h2>
-                <p className="hf-section-subtitle">
-                  We are at your service for catalog requests, wholesale bulk pricing, partnership discussions, or general inquiries.
+          {/* SECTION: GET IN TOUCH (CONTACT DETAILS & MAP EMBED) */}
+          <section id="contact-section" className="section-wrapper" style={{ padding: '70px 24px', background: '#ffffff' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <div className="section-header-center" style={{ marginBottom: '40px' }}>
+                <span className="hf-eyebrow-badge">DIRECT COMMUNICATION</span>
+                <h2 className="section-heading-clean">Get in Touch</h2>
+                <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '600px', margin: '10px auto 0' }}>
+                  Contact us about products, sourcing, or supplier inquiries.
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '32px', marginTop: '40px' }} className="contact-grid-responsive">
-                <div style={{ background: '#241b14', color: '#fff', padding: '36px', borderRadius: '20px', border: '1px solid rgba(140, 95, 36, 0.3)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '36px' }} className="contact-grid-responsive">
+                {/* Left Card: Coordinates */}
+                <div style={{ background: '#0e1a3f', color: '#fff', padding: '40px', borderRadius: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '20px', color: '#f5efe6' }}>Direct Coordinates</h3>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontSize: '0.95rem' }}>
+                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '24px', color: '#F5C66A' }}>
+                      Contact Information
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontSize: '0.95rem' }}>
                       <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <Mail size={20} color="#c59b3f" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <MapPin size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
                         <div>
-                          <div style={{ color: '#b8aba0', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
-                          <a href="mailto:info@mkbventuresgloballlc.com" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600' }}>
-                            info@mkbventuresgloballlc.com
+                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</div>
+                          <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px' }}>{companyInfo.address}</div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                        <Mail size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                        <div>
+                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
+                          <a href={`mailto:${companyInfo.email}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
+                            {companyInfo.email}
                           </a>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <Phone size={20} color="#c59b3f" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <Phone size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
                         <div>
-                          <div style={{ color: '#b8aba0', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number</div>
-                          <div>Direct: <a href="tel:+966595822656" style={{ color: '#fff', textDecoration: 'none' }}>(+966) 59 582 2656</a></div>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <MapPin size={20} color="#c59b3f" style={{ marginTop: '2px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#b8aba0', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Official Registered Address</div>
-                          <div style={{ color: '#fff', fontWeight: '600' }}>30 N Gould St # 68445</div>
-                          <div style={{ color: '#cbd5e1' }}>Sheridan, WY 82801</div>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                        <MessageSquare size={20} color="#25d366" style={{ marginTop: '2px', flexShrink: 0 }} />
-                        <div>
-                          <div style={{ color: '#b8aba0', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WhatsApp Direct</div>
-                          <a 
-                            href="https://wa.me/966595822656" 
-                            target="_blank" 
-                            rel="noreferrer"
-                            style={{ color: '#25d366', fontWeight: '700', textDecoration: 'none' }}
-                          >
-                            (+966) 59 582 2656 (Instant)
+                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone / WhatsApp</div>
+                          <a href={`tel:${companyInfo.phoneRaw}`} style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', marginTop: '2px', display: 'inline-block' }}>
+                            {companyInfo.phone}
                           </a>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                        <Clock size={22} color="#F5C66A" style={{ marginTop: '3px', flexShrink: 0 }} />
+                        <div>
+                          <div style={{ color: '#94a3b8', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hours</div>
+                          <div style={{ color: '#fff', fontWeight: '600', marginTop: '2px' }}>{companyInfo.hours}</div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '28px', paddingTop: '18px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.85rem', color: '#b8aba0' }}>
-                    Managed by <strong>MKB Ventures Global LLC</strong> • USA & Global Distribution
+                  <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <a 
+                      href={companyInfo.whatsappUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="btn-cart-whatsapp"
+                      style={{ justifyContent: 'center' }}
+                    >
+                      <MessageSquare size={18} />
+                      <span>Chat on WhatsApp ({companyInfo.phone})</span>
+                    </a>
                   </div>
                 </div>
 
-                <div style={{ background: '#fff', padding: '36px', borderRadius: '20px', border: '1px solid #eae2d6', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '18px', color: '#241b14', fontWeight: '700' }}>Send Us a Message</h3>
-                  <form onSubmit={handleFormSubmit} className="modal-form">
-                    <div className="form-group">
-                      <label className="form-label">Full Name *</label>
-                      <input type="text" required placeholder="Your name" className="form-input" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Email Address *</label>
-                      <input type="email" required placeholder="your.email@example.com" className="form-input" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Subject</label>
-                      <input type="text" placeholder="Wholesale Inquiry / Catalog / Order" className="form-input" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Message *</label>
-                      <textarea rows={4} placeholder="How can we assist you today?" required className="form-textarea"></textarea>
-                    </div>
-                    <button 
-                      type="submit" 
-                      className="btn-submit-modal"
-                      style={{ background: 'linear-gradient(135deg, #a67635 0%, #8c5f24 100%)', color: '#fff', fontWeight: '700' }}
-                    >
-                      Send Message
-                    </button>
-                  </form>
+                {/* Right Column: Interactive Form & Map Embed */}
+                <div>
+                  <div style={{ background: '#f8fafc', padding: '36px', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '18px', color: '#0e1a3f' }}>Send Us a Message</h3>
+                    
+                    <form onSubmit={handleFormSubmit} className="modal-form">
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="form-group">
+                          <label className="form-label">Name *</label>
+                          <input type="text" required placeholder="What's your name?" className="form-input" />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Email *</label>
+                          <input type="email" required placeholder="What's your email?" className="form-input" />
+                        </div>
+                      </div>
 
-                  {formSubmitted && (
-                    <div style={{ marginTop: '16px', padding: '12px', background: '#ecfdf5', color: '#065f46', borderRadius: '8px', fontSize: '0.9rem' }}>
-                      ✓ Thank you! Your message has been received by MKB Ventures Global LLC. We will reply within 24 hours.
-                    </div>
-                  )}
+                      <div className="form-group">
+                        <label className="form-label">Date *</label>
+                        <input 
+                          type="date" 
+                          required 
+                          value={contactDate}
+                          onChange={(e) => setContactDate(e.target.value)}
+                          className="form-input" 
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">Message *</label>
+                        <textarea rows={4} placeholder="Write your message..." required className="form-textarea"></textarea>
+                      </div>
+
+                      <div style={{ marginBottom: '20px' }}>
+                        <label className="hts-consent-label">
+                          <input 
+                            type="checkbox" 
+                            required 
+                            checked={consentChecked}
+                            onChange={(e) => setConsentChecked(e.target.checked)}
+                            className="hts-consent-checkbox"
+                          />
+                          <span>
+                            I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
+                          </span>
+                        </label>
+                      </div>
+
+                      <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                        Send Message
+                      </button>
+                    </form>
+
+                    {formSubmitted && (
+                      <div style={{ marginTop: '16px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '10px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <CheckCircle2 size={20} color="#059669" />
+                        <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Map Iframe */}
+                  <div className="map-embed-container">
+                    <iframe 
+                      src={companyInfo.mapEmbedUrl}
+                      height="240" 
+                      style={{ width: '100%', border: '0', display: 'block' }} 
+                      allowFullScreen="" 
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Ehthesham Ventures LLC Sheridan Location"
+                    ></iframe>
+                  </div>
                 </div>
               </div>
             </div>
@@ -806,25 +852,580 @@ export default function App() {
         </main>
       )}
 
-      {/* VIEW: PRODUCT DETAIL PAGE */}
+      {/* =========================================================================
+          VIEW: ABOUT US PAGE (MATCHING /about-us/)
+         ========================================================================= */}
+      {activeTab === 'about' && (
+        <main className="section-wrapper" style={{ padding: '60px 24px' }}>
+          <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
+            <div className="section-header-center" style={{ marginBottom: '40px' }}>
+              <span className="hf-eyebrow-badge">COMPANY PROFILE</span>
+              <h1 className="section-title">About Us</h1>
+              <p style={{ color: '#64748b', maxWidth: '700px', margin: '10px auto 0', fontSize: '1.05rem' }}>
+                Dedicated to sourcing authentic branded merchandise for modern e-commerce channels.
+              </p>
+            </div>
+
+            {/* About Our Business Block with Images */}
+            <div style={{ background: '#ffffff', borderRadius: '24px', padding: '48px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', marginBottom: '48px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px', alignItems: 'center' }} className="contact-grid-responsive">
+                <div>
+                  <div style={{ color: '#D97706', fontSize: '0.85rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    U.S. Based Trading Company
+                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', color: '#0e1a3f', marginBottom: '20px', lineHeight: 1.25 }}>
+                    {companyInfo.aboutTitle}
+                  </h2>
+                  <p style={{ color: '#475569', fontSize: '1.08rem', lineHeight: '1.8', marginBottom: '24px' }}>
+                    {companyInfo.aboutDescription}
+                  </p>
+                  <button className="btn-hero-primary" onClick={() => navigateTo('contact')}>
+                    Contact Us
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <img 
+                    src="https://images.unsplash.com/photo-1666627762609-a9d50d5ec707?q=85&w=600&fit=crop" 
+                    alt="Wholesale products sourcing" 
+                    style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px' }} 
+                  />
+                  <img 
+                    src="https://images.unsplash.com/photo-1678690832311-bb6e361989ca?q=85&w=600&fit=crop" 
+                    alt="E-commerce distribution" 
+                    style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px' }} 
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Our Sourcing Section */}
+            <div style={{ background: '#f8fafc', borderRadius: '24px', padding: '48px', border: '1px solid #e2e8f0' }}>
+              <div className="section-header-center" style={{ marginBottom: '36px' }}>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#0e1a3f', marginBottom: '12px' }}>
+                  {companyInfo.sourcingTitle}
+                </h2>
+                <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: '720px', margin: '0 auto', lineHeight: 1.7 }}>
+                  {companyInfo.sourcingDescription}
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px' }} className="contact-grid-responsive">
+                <div className="sourcing-pillar-card">
+                  <img 
+                    src="https://images.unsplash.com/photo-1695561115667-c2e975c7cf22?q=85&w=1200&h=600&fit=crop" 
+                    alt="Product Authenticity" 
+                    className="sourcing-pillar-img"
+                  />
+                  <div className="sourcing-pillar-body">
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: '700', color: '#0e1a3f', marginBottom: '10px' }}>
+                      Product Authenticity
+                    </h3>
+                    <p style={{ color: '#475569', fontSize: '0.96rem', lineHeight: '1.6' }}>
+                      We focus on authentic products and careful sourcing for our wholesale business.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="sourcing-pillar-card">
+                  <img 
+                    src="https://images.unsplash.com/photo-1524221629551-6dd14def5ffd?q=85&w=1200&h=600&fit=crop" 
+                    alt="Resale Channels" 
+                    className="sourcing-pillar-img"
+                  />
+                  <div className="sourcing-pillar-body">
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: '700', color: '#0e1a3f', marginBottom: '10px' }}>
+                      Resale Channels
+                    </h3>
+                    <p style={{ color: '#475569', fontSize: '0.96rem', lineHeight: '1.6' }}>
+                      Our approach supports resale on Amazon and other e-commerce platforms.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* =========================================================================
+          VIEW: OUR BUSINESS PAGE (MATCHING /our-business/)
+         ========================================================================= */}
+      {activeTab === 'business' && (
+        <main className="section-wrapper" style={{ padding: '60px 24px' }}>
+          <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
+            <div className="section-header-center" style={{ marginBottom: '40px' }}>
+              <span className="hf-eyebrow-badge">STRATEGY & OPERATIONS</span>
+              <h1 className="section-title">Our Business</h1>
+              <p style={{ color: '#64748b', maxWidth: '700px', margin: '10px auto 0', fontSize: '1.05rem' }}>
+                Building transparent wholesale pipelines between premier manufacturers and online buyers.
+              </p>
+            </div>
+
+            {/* Top Overview */}
+            <div style={{ background: '#ffffff', borderRadius: '24px', padding: '40px', border: '1px solid #e2e8f0', marginBottom: '40px' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#0e1a3f', marginBottom: '16px' }}>
+                {companyInfo.businessTitle}
+              </h2>
+              <p style={{ color: '#475569', fontSize: '1.1rem', lineHeight: '1.8' }}>
+                {companyInfo.businessDescription}
+              </p>
+            </div>
+
+            {/* Two Main Pillars from /our-business/ */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }} className="contact-grid-responsive">
+              <div className="sourcing-pillar-card">
+                <img 
+                  src="https://images.unsplash.com/photo-1675825547463-0788eca2320e?q=85&w=600&fit=crop" 
+                  alt="Broad Product Categories" 
+                  className="sourcing-pillar-img"
+                />
+                <div className="sourcing-pillar-body">
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#0e1a3f', marginBottom: '10px' }}>
+                    Broad Product Categories
+                  </h3>
+                  <p style={{ color: '#475569', fontSize: '0.98rem', lineHeight: '1.65' }}>
+                    Our categories span beauty, household essentials, kitchen, office, grocery, pet, and sports and outdoor products.
+                  </p>
+                </div>
+              </div>
+
+              <div className="sourcing-pillar-card">
+                <img 
+                  src="https://images.unsplash.com/photo-1687582394230-79b6651bba09?q=85&w=600&fit=crop" 
+                  alt="Supplier Collaboration" 
+                  className="sourcing-pillar-img"
+                />
+                <div className="sourcing-pillar-body">
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#0e1a3f', marginBottom: '10px' }}>
+                    Supplier Collaboration
+                  </h3>
+                  <p style={{ color: '#475569', fontSize: '0.98rem', lineHeight: '1.65' }}>
+                    We build supplier relationships through clear communication, careful product selection, and practical resale planning.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Callout / Partner Banner */}
+            <div style={{ background: '#0e1a3f', color: '#ffffff', borderRadius: '24px', padding: '48px 40px', textAlign: 'center' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', marginBottom: '16px' }}>
+                Partner With Ehthesham Ventures LLC
+              </h2>
+              <p style={{ color: '#cbd5e1', fontSize: '1.1rem', maxWidth: '680px', margin: '0 auto 28px', lineHeight: 1.7 }}>
+                We source authentic branded products through legitimate channels for resale across Amazon and other e-commerce marketplaces.
+              </p>
+              <button 
+                className="btn-hero-primary"
+                onClick={() => handleOpenPartner('partner')}
+                style={{ padding: '14px 36px', fontSize: '1rem' }}
+              >
+                Partner
+              </button>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* =========================================================================
+          VIEW: PRODUCT CATEGORIES PAGE (MATCHING /product-categories/)
+         ========================================================================= */}
+      {activeTab === 'categories' && (
+        <main className="section-wrapper" style={{ padding: '60px 24px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div className="section-header-center" style={{ marginBottom: '40px' }}>
+              <span className="hf-eyebrow-badge">PRODUCT SOURCING</span>
+              <h1 className="section-title">Product Categories</h1>
+              <p style={{ color: '#64748b', maxWidth: '650px', margin: '10px auto 0', fontSize: '1.05rem' }}>
+                Featured product categories sourced for reliable turnover and retail excellence.
+              </p>
+            </div>
+
+            {/* Featured Categories Grid */}
+            <div style={{ marginBottom: '50px' }}>
+              <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#0e1a3f', marginBottom: '24px' }}>
+                Featured Categories
+              </h2>
+
+              <div className="categories-grid-four">
+                {categories.map((cat) => (
+                  <div 
+                    key={cat.id} 
+                    className="category-card-clean"
+                    onClick={() => handleCategoryClick(cat.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="category-clean-img-wrap">
+                      <img src={cat.image} alt={cat.name} className="category-clean-img" loading="lazy" />
+                      <div className="category-clean-overlay"></div>
+                      <div className="category-clean-badge">{cat.name}</div>
+                    </div>
+                    <div className="category-clean-info">
+                      <h3 className="category-clean-title">{cat.name}</h3>
+                      <p className="category-clean-desc">{cat.description}</p>
+                      <button className="category-clean-btn">
+                        <span>Browse</span>
+                        <ArrowRight size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Shop Categories Product Strip */}
+            <div style={{ background: '#ffffff', borderRadius: '24px', padding: '40px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#0e1a3f' }}>Shop Categories</h2>
+                <button 
+                  className="btn-hero-primary"
+                  onClick={() => navigateTo('shop')}
+                >
+                  Browse All Categories
+                </button>
+              </div>
+
+              <div className="products-grid">
+                {products.map((prod) => (
+                  <div 
+                    key={prod.id} 
+                    className="product-card"
+                    onClick={() => viewProductDetail(prod)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="product-img-wrap">
+                      <img src={prod.image} alt={prod.name} className="product-img" loading="lazy" />
+                      <span className="product-badge">{prod.categoryName}</span>
+                    </div>
+
+                    <div className="product-body">
+                      <div className="product-header-row">
+                        <span className="product-sku">SKU: {prod.sku}</span>
+                        <span className="stock-tag">● {prod.availability}</span>
+                      </div>
+
+                      <h3 className="product-title">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); viewProductDetail(prod); }}
+                          className="product-title-btn"
+                        >
+                          {prod.name}
+                        </button>
+                      </h3>
+
+                      <div className="product-price-box">
+                        <span className="product-price-val">{prod.price}</span>
+                        <span className="product-price-sub">Wholesale Tiered</span>
+                      </div>
+
+                      <div className="product-actions-row">
+                        <button 
+                          className="btn-add-cart"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(prod, 1, true);
+                          }}
+                        >
+                          <ShoppingCart size={15} />
+                          <span>Add to cart</span>
+                        </button>
+                        <button 
+                          className="btn-view-details"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            viewProductDetail(prod);
+                          }}
+                        >
+                          <Eye size={15} />
+                          <span>View Details</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* =========================================================================
+          VIEW: SHOP PAGE (MATCHING /shop/)
+         ========================================================================= */}
+      {activeTab === 'shop' && (
+        <main className="section-wrapper" style={{ padding: '50px 24px' }}>
+          <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+            {/* Breadcrumb */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#64748b', marginBottom: '20px' }}>
+              <span onClick={() => navigateTo('home')} style={{ cursor: 'pointer', color: '#1e3a8a', fontWeight: '600' }}>Home</span>
+              <span>/</span>
+              <span>Products</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '28px' }}>
+              <div>
+                <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: '#0e1a3f' }}>Shop</h1>
+                <p style={{ color: '#64748b', fontSize: '0.95rem' }}>
+                  Showing all {filteredProducts.length} results
+                </p>
+              </div>
+
+              {/* Sorting & Search */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative' }}>
+                  <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input 
+                    type="text" 
+                    placeholder="Search catalog..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      padding: '9px 14px 9px 36px',
+                      borderRadius: '30px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.88rem',
+                      outline: 'none',
+                      width: '220px'
+                    }}
+                  />
+                </div>
+
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  style={{
+                    padding: '9px 16px',
+                    borderRadius: '30px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.88rem',
+                    background: '#fff',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="default">Default sorting</option>
+                  <option value="price-low">Sort by price: low to high</option>
+                  <option value="price-high">Sort by price: high to low</option>
+                  <option value="rating">Sort by average rating</option>
+                  <option value="latest">Sort by latest</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Products Grid */}
+            <div className="products-grid">
+              {filteredProducts.map((prod) => (
+                <div 
+                  key={prod.id} 
+                  className="product-card"
+                  onClick={() => viewProductDetail(prod)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="product-img-wrap">
+                    <img src={prod.image} alt={prod.name} className="product-img" loading="lazy" />
+                    <span className="product-badge">{prod.categoryName}</span>
+                  </div>
+
+                  <div className="product-body">
+                    <div className="product-header-row">
+                      <span className="product-sku">SKU: {prod.sku}</span>
+                      <span className="stock-tag">● {prod.availability}</span>
+                    </div>
+
+                    <h3 className="product-title">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); viewProductDetail(prod); }}
+                        className="product-title-btn"
+                      >
+                        {prod.name}
+                      </button>
+                    </h3>
+
+                    <div className="product-price-box">
+                      <span className="product-price-val">{prod.price}</span>
+                      <span className="product-price-sub">Wholesale Sourced</span>
+                    </div>
+
+                    <p className="product-excerpt">{prod.description}</p>
+
+                    <div className="product-actions-row">
+                      <button 
+                        className="btn-add-cart"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(prod, 1, true);
+                        }}
+                      >
+                        <ShoppingCart size={15} />
+                        <span>Add to cart</span>
+                      </button>
+                      <button 
+                        className="btn-view-details"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          viewProductDetail(prod);
+                        }}
+                      >
+                        <Eye size={15} />
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* =========================================================================
+          VIEW: CONTACT US PAGE (MATCHING /contact-us/)
+         ========================================================================= */}
+      {activeTab === 'contact' && (
+        <main className="section-wrapper" style={{ padding: '60px 24px' }}>
+          <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
+            <div className="section-header-center" style={{ marginBottom: '40px' }}>
+              <span className="hf-eyebrow-badge">CONNECT WITH US</span>
+              <h1 className="section-title">Contact Us</h1>
+              <p style={{ color: '#64748b', maxWidth: '600px', margin: '10px auto 0', fontSize: '1.05rem' }}>
+                Contact us about products, sourcing, or supplier inquiries.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '40px', marginBottom: '48px' }} className="contact-grid-responsive">
+              {/* Form Side */}
+              <div style={{ background: '#ffffff', padding: '40px', borderRadius: '24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: '#0e1a3f', marginBottom: '20px' }}>
+                  Get in Touch
+                </h2>
+
+                <form onSubmit={handleFormSubmit} className="modal-form">
+                  <div className="form-group">
+                    <label className="form-label">Name *</label>
+                    <input type="text" required placeholder="What's your name?" className="form-input" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Email *</label>
+                    <input type="email" required placeholder="What's your email?" className="form-input" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Date *</label>
+                    <input 
+                      type="date" 
+                      required 
+                      value={contactDate}
+                      onChange={(e) => setContactDate(e.target.value)}
+                      className="form-input" 
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Message *</label>
+                    <textarea rows={4} placeholder="Write your message..." required className="form-textarea"></textarea>
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="hts-consent-label">
+                      <input 
+                        type="checkbox" 
+                        required 
+                        checked={consentChecked}
+                        onChange={(e) => setConsentChecked(e.target.checked)}
+                        className="hts-consent-checkbox"
+                      />
+                      <span>
+                        I consent to use of provided personal data for the purpose of responding to the request as described in Privacy Policy which I have read. I may withdraw my consent at any time.
+                      </span>
+                    </label>
+                  </div>
+
+                  <button type="submit" className="btn-hero-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                    Send Message
+                  </button>
+                </form>
+
+                {formSubmitted && (
+                  <div style={{ marginTop: '16px', padding: '14px', background: '#ecfdf5', color: '#065f46', borderRadius: '10px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={20} color="#059669" />
+                    <span>Thank you! Your message has been sent to Ehthesham Ventures LLC. We will follow up shortly.</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Coordinates Side */}
+              <div>
+                <div style={{ background: '#0e1a3f', color: '#ffffff', padding: '36px', borderRadius: '24px', marginBottom: '24px' }}>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#F5C66A', marginBottom: '20px' }}>
+                    Company Address & Hours
+                  </h3>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Address</div>
+                      <p style={{ fontWeight: '600', fontSize: '1.05rem', marginTop: '4px' }}>{companyInfo.address}</p>
+                    </div>
+
+                    <div>
+                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hours</div>
+                      <p style={{ fontWeight: '600', fontSize: '1.05rem', marginTop: '4px' }}>{companyInfo.hours}</p>
+                    </div>
+
+                    <div>
+                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</div>
+                      <a href={`mailto:${companyInfo.email}`} style={{ color: '#F5C66A', fontWeight: '600', fontSize: '1.05rem', textDecoration: 'none', marginTop: '4px', display: 'block' }}>
+                        {companyInfo.email}
+                      </a>
+                    </div>
+
+                    <div>
+                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number</div>
+                      <a href={`tel:${companyInfo.phoneRaw}`} style={{ color: '#F5C66A', fontWeight: '600', fontSize: '1.05rem', textDecoration: 'none', marginTop: '4px', display: 'block' }}>
+                        {companyInfo.phone}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Google Maps Embed */}
+                <div className="map-embed-container">
+                  <iframe 
+                    src={companyInfo.mapEmbedUrl}
+                    height="320" 
+                    style={{ width: '100%', border: '0', display: 'block' }} 
+                    allowFullScreen="" 
+                    loading="lazy" 
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Ehthesham Ventures LLC Location Map"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* =========================================================================
+          VIEW: PRODUCT DETAIL PAGE
+         ========================================================================= */}
       {activeTab === 'product-detail' && activeProduct && (
         <div className="product-detail-page">
           <div className="detail-container">
-            
             {/* Top Breadcrumbs & Back Button */}
             <div className="detail-top-nav">
               <button 
                 className="btn-back-catalog" 
-                onClick={() => navigateTo('home')}
+                onClick={() => navigateTo('shop')}
               >
                 <ArrowLeft size={16} />
-                <span>Back to Wholesale Catalog</span>
+                <span>Back to Products</span>
               </button>
               <div className="detail-breadcrumbs">
                 <span onClick={() => navigateTo('home')} className="crumb-link">Home</span>
                 <span className="crumb-sep">/</span>
                 <span 
-                  onClick={() => { setSelectedCategory(activeProduct.category); navigateTo('home'); }} 
+                  onClick={() => { setSelectedCategory(activeProduct.category); navigateTo('shop'); }} 
                   className="crumb-link"
                 >
                   {activeProduct.categoryName}
@@ -836,8 +1437,7 @@ export default function App() {
 
             {/* Main Product Showcase Grid */}
             <div className="detail-showcase-grid">
-              
-              {/* Left Column: Visual Showcase & Quality Badges */}
+              {/* Left Column: Visual Showcase */}
               <div className="detail-gallery-col">
                 <div className="detail-img-card">
                   <img 
@@ -848,37 +1448,36 @@ export default function App() {
                   <div className="detail-badge-float">{activeProduct.categoryName}</div>
                   <div className="detail-verified-badge">
                     <ShieldCheck size={16} />
-                    <span>100% Genuine Wholesale Batch</span>
+                    <span>100% Authentic Branded Sourcing</span>
                   </div>
                 </div>
 
-                {/* Quality & Assurance Badges */}
                 <div className="detail-assurance-strip">
                   <div className="assurance-item">
                     <Truck size={18} className="assurance-icon" />
                     <div>
-                      <strong>Fast B2B Dispatch</strong>
-                      <span>Dispatched via Sheridan, WY & Global Trade Hubs</span>
+                      <strong>Wholesale Sourcing</strong>
+                      <span>Dispatched from Sheridan, WY and Global Trade Centers</span>
                     </div>
                   </div>
                   <div className="assurance-item">
                     <Award size={18} className="assurance-icon" />
                     <div>
-                      <strong>Quality Inspected</strong>
-                      <span>Verified under MKB Ventures Global LLC management</span>
+                      <strong>Channel Compliant</strong>
+                      <span>Ready for Amazon FBA & E-commerce fulfillment</span>
                     </div>
                   </div>
                   <div className="assurance-item">
                     <Building2 size={18} className="assurance-icon" />
                     <div>
                       <strong>Wyoming LLC Registered</strong>
-                      <span>Official Corporate Wholesale Entity #68445</span>
+                      <span>Official Corporate Entity #68440</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Commercial Product Information & Add to Cart */}
+              {/* Right Column: Commercial Product Information */}
               <div className="detail-info-col">
                 <div className="detail-meta-row">
                   <span className="detail-sku-badge">SKU: {activeProduct.sku}</span>
@@ -893,7 +1492,7 @@ export default function App() {
                 <div className="detail-reviews-row">
                   <div className="star-rating">★★★★★</div>
                   <span className="rating-score">{activeProduct.rating}</span>
-                  <span className="review-count">({activeProduct.reviewCount || 35} verified B2B partner reviews)</span>
+                  <span className="review-count">({activeProduct.reviewCount || 24} wholesale buyer reviews)</span>
                 </div>
 
                 <div className="detail-price-panel">
@@ -949,7 +1548,7 @@ export default function App() {
                 {/* Purchase & Cart Actions */}
                 <div className="detail-purchase-panel">
                   <div className="qty-row">
-                    <label className="qty-label">Wholesale Quantity:</label>
+                    <label className="qty-label">Order Quantity:</label>
                     <div className="qty-stepper">
                       <button 
                         type="button" 
@@ -989,7 +1588,7 @@ export default function App() {
                     </button>
 
                     <a 
-                      href={`https://wa.me/966595822656?text=${encodeURIComponent(`Hello MKB Ventures Global LLC, I want to order ${detailQuantity}x ${activeProduct.name} (SKU: ${activeProduct.sku}, Total: ₨ ${(activeProduct.priceNumeric * detailQuantity).toLocaleString()}).`)}`}
+                      href={`https://wa.me/+9669362206795?text=${encodeURIComponent(`Hello Ehthesham Ventures LLC, I want to inquire/order ${detailQuantity}x ${activeProduct.name} (SKU: ${activeProduct.sku}, Total: ₨ ${(activeProduct.priceNumeric * detailQuantity).toLocaleString()}).`)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="btn-detail-whatsapp"
@@ -998,52 +1597,30 @@ export default function App() {
                       <span>WhatsApp Direct Order</span>
                     </a>
                   </div>
-
-                  <div className="detail-secondary-actions">
-                    <button 
-                      className="btn-detail-rfq"
-                      onClick={() => handleOpenQuote(activeProduct)}
-                    >
-                      <span>Request Formal Wholesale Quote / Invoice</span>
-                    </button>
-                  </div>
                 </div>
-
-                {/* Contact Help Strip */}
-                <div className="detail-help-strip">
-                  <span>Questions about bulk orders?</span>
-                  <a href="tel:+966507415829" className="help-link">
-                    <Phone size={14} /> (+966) 50 741 5829
-                  </a>
-                  <span className="sep">•</span>
-                  <a href="mailto:info@hassanfaridllc.com" className="help-link">
-                    <Mail size={14} /> info@hassanfaridllc.com
-                  </a>
-                </div>
-
               </div>
             </div>
 
-            {/* Tabbed Detailed Specifications */}
+            {/* Tabbed Product Details */}
             <div className="detail-tabs-section">
               <div className="detail-tabs-header">
                 <button 
                   className={`detail-tab-btn ${activeDetailTab === 'description' ? 'active' : ''}`}
                   onClick={() => setActiveDetailTab('description')}
                 >
-                  Product Details & Overview
+                  Description
                 </button>
                 <button 
                   className={`detail-tab-btn ${activeDetailTab === 'specs' ? 'active' : ''}`}
                   onClick={() => setActiveDetailTab('specs')}
                 >
-                  Technical Specifications & Packaging
+                  Specifications
                 </button>
                 <button 
                   className={`detail-tab-btn ${activeDetailTab === 'shipping' ? 'active' : ''}`}
                   onClick={() => setActiveDetailTab('shipping')}
                 >
-                  Wholesale Logistics & Terms
+                  Logistics & Terms
                 </button>
               </div>
 
@@ -1054,12 +1631,12 @@ export default function App() {
                     <p className="tab-lead-text">{activeProduct.longDescription || activeProduct.description}</p>
                     <div className="tab-features-grid">
                       <div className="tab-feature-card">
-                        <h4>Commercial Quality Standard</h4>
-                        <p>Specially manufactured and selected for sustained commercial and retail performance, offering high durability and verified consumer satisfaction.</p>
+                        <h4>Authentic Sourcing Guarantee</h4>
+                        <p>Procured directly from legitimate brand owners and authorized distributors to provide full resale compliance on Amazon and leading e-commerce platforms.</p>
                       </div>
                       <div className="tab-feature-card">
-                        <h4>Packaging & Presentation</h4>
-                        <p>All units come in shelf-ready retail packaging with standard barcoding, regulatory ingredient/material markings, and protective outer wrap.</p>
+                        <h4>Packaging & Preparation</h4>
+                        <p>Delivered in shelf-ready retail cartons with standard barcodes and protective packing designed for safe transit.</p>
                       </div>
                     </div>
                   </div>
@@ -1067,7 +1644,7 @@ export default function App() {
 
                 {activeDetailTab === 'specs' && (
                   <div className="tab-pane">
-                    <h3 className="tab-title">Technical Specifications & Dimensions</h3>
+                    <h3 className="tab-title">Technical Specifications & Sourcing Data</h3>
                     {activeProduct.specs && activeProduct.specs.length > 0 ? (
                       <table className="specs-table">
                         <tbody>
@@ -1080,7 +1657,7 @@ export default function App() {
                         </tbody>
                       </table>
                     ) : (
-                      <p>Standard export specifications apply. Contact our desk for complete COA / spec sheets.</p>
+                      <p>Standard manufacturer specifications apply. Contact us for further documentation.</p>
                     )}
                   </div>
                 )}
@@ -1090,20 +1667,20 @@ export default function App() {
                     <h3 className="tab-title">Wholesale Logistics & Dispatch Terms</h3>
                     <div className="shipping-info-grid">
                       <div className="ship-card">
-                        <h4>Order Processing & Lead Time</h4>
-                        <p>Orders are dispatched within 24 to 48 business hours upon confirmation. Tracking numbers and freight waybills are provided immediately.</p>
+                        <h4>Fulfillment & Sourcing</h4>
+                        <p>Orders are verified and prepared through authorized channels. Tracking information is provided upon dispatch.</p>
                       </div>
                       <div className="ship-card">
-                        <h4>Shipping Hubs & Carriers</h4>
-                        <p>Dispatched from our primary registered facilities at Sheridan, Wyoming (US domestic & North America) and our Middle East trade hub in KSA.</p>
+                        <h4>Headquarters & Facilities</h4>
+                        <p>Registered at {companyInfo.address}. Coordinating domestic US logistics and international merchant sourcing.</p>
                       </div>
                       <div className="ship-card">
-                        <h4>Pallet & Container Loads</h4>
-                        <p>Full Container Load (FCL) and Less than Container Load (LCL) consolidation available for cross-border wholesale buyers.</p>
+                        <h4>Inquiries & Custom Quantities</h4>
+                        <p>Reach out directly to confirm current stock levels, case quantities, and wholesale pricing agreements.</p>
                       </div>
                       <div className="ship-card">
-                        <h4>Payment Methods</h4>
-                        <p>We accept Wire Transfer (T/T), Commercial ACH, Letter of Credit (LC for qualifying volumes), and verified bank deposits.</p>
+                        <h4>Support Contacts</h4>
+                        <p>Email: {companyInfo.email} | Phone / WhatsApp: {companyInfo.phone}</p>
                       </div>
                     </div>
                   </div>
@@ -1115,7 +1692,7 @@ export default function App() {
             <div className="detail-related-section">
               <div className="related-header">
                 <span className="section-tag">CATALOG ASSORTMENT</span>
-                <h2 className="related-title">Other Products from MKB Ventures</h2>
+                <h2 className="related-title">Other Products from Ehthesham Ventures</h2>
               </div>
 
               <div className="products-grid">
@@ -1180,464 +1757,71 @@ export default function App() {
         </div>
       )}
 
-      {/* VIEW: ABOUT US */}
-      {activeTab === 'about' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '850px', margin: '0 auto', background: '#fff', padding: '48px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-            <span className="section-tag">COMPANY OVERVIEW</span>
-            <h1 className="section-title" style={{ marginBottom: '20px' }}>About MKB Ventures Global LLC</h1>
-            <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.8, marginBottom: '20px' }}>
-              <strong>MKB VENTURES GLOBAL LLC</strong> operates from our registered headquarters at <strong>30 N Gould St # 68445 Sheridan, WY 82801</strong>. Our mission is to bridge the gap between quality manufacturers and consumers worldwide across Automotive Essentials, Baby Care, Personal Care, Grocery, and Home Living.
-            </p>
-            <p style={{ fontSize: '1rem', color: '#475569', lineHeight: 1.8, marginBottom: '20px' }}>
-              We pride ourselves on thoughtful sourcing — choosing products that deliver genuine performance, high customer satisfaction, and dependable quality for retail and wholesale partners worldwide.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', margin: '36px 0' }}>
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ color: '#102a3a', fontSize: '1.1rem', marginBottom: '8px' }}>Integrity First</h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Transparent pricing, transparent communication, and verified product authenticity.</p>
-              </div>
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ color: '#102a3a', fontSize: '1.1rem', marginBottom: '8px' }}>Logistics Agility</h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Fast customs turnaround, reliable carrier contracts, and multi-hub fulfillment.</p>
-              </div>
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ color: '#102a3a', fontSize: '1.1rem', marginBottom: '8px' }}>Partner Centric</h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Dedicated trade managers ready to accommodate customer requirements and custom schedules.</p>
-              </div>
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '30px' }}>
-              <button className="btn-hero-primary" onClick={() => navigateTo('contact')}>
-                Contact Management Desk
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW: OUR BUSINESS */}
-      {activeTab === 'business' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <div className="section-header-center">
-              <span className="section-tag">CAPABILITIES & OPERATIONS</span>
-              <h1 className="section-title">Our Business Model</h1>
-              <p style={{ color: '#64748b', maxWidth: '650px', margin: '12px auto 0' }}>
-                Supplying verified retail and commercial sectors through streamlined supply chains and B2B excellence.
-              </p>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginTop: '40px' }}>
-              <div style={{ background: '#fff', padding: '30px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
-                <div style={{ color: '#1e7087', marginBottom: '14px' }}><Layers size={36} /></div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>Wholesale Distribution</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.6 }}>
-                  Direct supply of Everyday Essentials, Personal Care, and Household products to retail chains, convenience stores, and e-commerce merchants.
-                </p>
-              </div>
-              <div style={{ background: '#fff', padding: '30px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
-                <div style={{ color: '#1e7087', marginBottom: '14px' }}><Truck size={36} /></div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>Import & Export</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.6 }}>
-                  International trade routes connecting high-demand markets with premier suppliers across North America, the Middle East, and Asia.
-                </p>
-              </div>
-              <div style={{ background: '#fff', padding: '30px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
-                <div style={{ color: '#1e7087', marginBottom: '14px' }}><Building2 size={36} /></div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>Commercial Procurement</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.6 }}>
-                  Specialized contracts for offices, hotels, cleaning service companies, and institutional facilities requiring continuous recurring supplies.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '40px', background: '#102a3a', color: '#fff', padding: '36px', borderRadius: '20px', textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', marginBottom: '12px' }}>Ready to Scale Your Inventory?</h2>
-              <p style={{ color: '#cbd5e1', maxWidth: '600px', margin: '0 auto 24px' }}>
-                Let us build a customized supply plan tailored to your volume requirements and distribution schedule.
-              </p>
-              <button className="btn-hero-primary" onClick={() => handleOpenPartner('partner')}>
-                Inquire For Wholesale Account
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW: PRODUCT CATEGORIES */}
-      {activeTab === 'categories' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div className="section-header-center">
-            <span className="section-tag">CATALOG OVERVIEW</span>
-            <h1 className="section-title">All Product Categories</h1>
-            <p style={{ color: '#64748b', maxWidth: '600px', margin: '10px auto 0' }}>
-              Explore our core catalog sectors thoughtfully curated for reliable turnover and high quality.
-            </p>
-          </div>
-
-          <div className="categories-grid" style={{ marginBottom: '50px' }}>
-            {categories.map((cat) => (
-              <div 
-                key={cat.id} 
-                className="category-card"
-                onClick={() => {
-                  setSelectedCategory(cat.id);
-                  navigateTo('home');
-                  setTimeout(() => {
-                    const el = document.getElementById('featured-products-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }}
-              >
-                <img src={cat.image} alt={cat.name} className="category-card-img" />
-                <div className="category-card-overlay">
-                  <h3 className="category-title">{cat.name}</h3>
-                  <p className="category-desc">{cat.description}</p>
-                  <button className="btn-category-pill">
-                    {cat.buttonText}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* VIEW: WHOLESALE PARTNERSHIPS */}
-      {activeTab === 'partnerships' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto', background: '#fff', padding: '40px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-            <span className="section-tag">EXPAND WITH US</span>
-            <h1 className="section-title" style={{ marginBottom: '16px' }}>Wholesale Partnerships</h1>
-            <p style={{ color: '#475569', fontSize: '1rem', lineHeight: 1.7, marginBottom: '24px' }}>
-              Whether you are an independent supermarket, a chain retailer, or an online merchant, MKB VENTURES GLOBAL LLC provides flexible minimums, volume price tiers, and dependable fulfillment.
-            </p>
-
-            <form onSubmit={handleFormSubmit} className="modal-form">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group">
-                  <label className="form-label">Contact Name *</label>
-                  <input type="text" required placeholder="Your full name" className="form-input" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Company / Business Name *</label>
-                  <input type="text" required placeholder="Business entity name" className="form-input" />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group">
-                  <label className="form-label">Email Address *</label>
-                  <input type="email" required placeholder="business@example.com" className="form-input" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Phone Number *</label>
-                  <input type="tel" required placeholder="(+966) / (+1) Phone" className="form-input" />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Business Type</label>
-                <select className="form-select">
-                  <option>Brick & Mortar Retailer</option>
-                  <option>E-commerce / Marketplace Seller</option>
-                  <option>Regional Distributor</option>
-                  <option>Institutional / Facility Buyer</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Estimated Monthly Purchase Volume</label>
-                <select className="form-select">
-                  <option>$5,000 - $25,000</option>
-                  <option>$25,000 - $100,000</option>
-                  <option>$100,000+</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Message & Products of Interest</label>
-                <textarea rows={4} placeholder="Tell us which products and categories you are looking to purchase..." className="form-textarea" required></textarea>
-              </div>
-              <button type="submit" className="btn-submit-modal">
-                Submit Wholesale Application
-              </button>
-            </form>
-
-            {formSubmitted && (
-              <div style={{ marginTop: '20px', padding: '16px', background: '#ecfdf5', color: '#065f46', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CheckCircle2 size={24} color="#059669" />
-                <div>
-                  <strong>Application Submitted Successfully!</strong>
-                  <p style={{ fontSize: '0.88rem' }}>Our wholesale accounts director from MKB Ventures Global LLC will review your details and contact you shortly.</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* VIEW: SUPPLIER INQUIRIES (WITH EXACT TEXT PROVIDED BY USER) */}
-      {activeTab === 'supplier' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '850px', margin: '0 auto' }}>
-            <div className="section-header-center">
-              <span className="section-tag">SUPPLIER INQUIRIES</span>
-              <h1 className="section-title">Supplier Inquiries</h1>
-              <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: '680px', margin: '14px auto 0' }}>
-                Tell us about your products and wholesale inquiry; our team will review your message.
-              </p>
-            </div>
-
-            {/* Quick Contact Info Strip with exact address and phone */}
-            <div style={{
-              background: '#102a3a',
-              color: '#ffffff',
-              padding: '24px 30px',
-              borderRadius: '16px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '16px',
-              marginBottom: '32px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Mail size={20} color="#38bdf8" />
-                <a href="mailto:info@hassanfaridllc.com" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600' }}>
-                  info@hassanfaridllc.com
-                </a>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Phone size={20} color="#38bdf8" />
-                <a href="tel:+966507415829" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600' }}>
-                  (+966) 50 741 5829
-                </a>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <MapPin size={20} color="#38bdf8" />
-                <span>30 N Gould St # 68479 Sheridan, WY 82801</span>
-              </div>
-            </div>
-
-            <div style={{ background: '#fff', padding: '40px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-              <div style={{ marginBottom: '24px', borderLeft: '4px solid #1e7087', paddingLeft: '16px' }}>
-                <h3 style={{ fontSize: '1.25rem', color: '#102a3a', marginBottom: '8px' }}>Supplier Inquiries</h3>
-                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6' }}>
-                  Tell us about your business and the products you’re looking to source. Share product details, brand information, and your preferred order quantities. Our team will review your inquiry and follow up about potential next steps.
-                </p>
-              </div>
-
-              <form onSubmit={handleFormSubmit} className="modal-form">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div className="form-group">
-                    <label className="form-label">Company / Factory Name *</label>
-                    <input type="text" required placeholder="Manufacturing or trading entity" className="form-input" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Representative Name *</label>
-                    <input type="text" required placeholder="Your name" className="form-input" />
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div className="form-group">
-                    <label className="form-label">Direct Email *</label>
-                    <input type="email" required placeholder="rep@brand.com" className="form-input" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Direct Phone / WhatsApp *</label>
-                    <input type="tel" required placeholder="(+966) 50 741 5829 or US phone" className="form-input" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Preferred Order Quantities / MOQs</label>
-                  <input type="text" placeholder="e.g. LCL, FCL, Pallets, Master Cartons" className="form-input" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Share Product Details & Brand Information *</label>
-                  <textarea rows={4} placeholder="Describe your product lines, certifications (FDA, ISO, GMP), brand catalog link, and manufacturing location..." className="form-textarea" required></textarea>
-                </div>
-                <button type="submit" className="btn-submit-modal">
-                  Submit Supplier Inquiry
-                </button>
-              </form>
-
-              {formSubmitted && (
-                <div style={{ marginTop: '20px', padding: '16px', background: '#ecfdf5', color: '#065f46', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <CheckCircle2 size={24} color="#059669" />
-                  <div>
-                    <strong>Supplier Inquiry Received!</strong>
-                    <p style={{ fontSize: '0.88rem' }}>Our team will review your inquiry and follow up about potential next steps.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW: CONTACT US */}
-      {activeTab === 'contact' && (
-        <div className="section-wrapper" style={{ padding: '60px 24px' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <div className="section-header-center">
-              <span className="section-tag">GET IN TOUCH</span>
-              <h1 className="section-title">Contact MKB Ventures Global LLC</h1>
-              <p style={{ color: '#64748b', maxWidth: '600px', margin: '10px auto 0' }}>
-                We are at your service for catalog requests, partnership discussions, or general inquiries.
-              </p>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '32px', marginTop: '40px' }}>
-              <div style={{ background: '#241b14', color: '#fff', padding: '36px', borderRadius: '20px', border: '1px solid rgba(140, 95, 36, 0.3)' }}>
-                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '16px', color: '#f5efe6' }}>Direct Coordinates</h3>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontSize: '0.95rem' }}>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <Mail size={20} color="#c59b3f" />
-                    <div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.8rem', textTransform: 'uppercase' }}>Email</div>
-                      <a href="mailto:info@mkbventuresgloballlc.com" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600' }}>
-                        info@mkbventuresgloballlc.com
-                      </a>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <Phone size={20} color="#c59b3f" />
-                    <div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.8rem', textTransform: 'uppercase' }}>Phone Number</div>
-                      <div>Direct: <a href="tel:+966595822656" style={{ color: '#fff' }}>(+966) 59 582 2656</a></div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <MapPin size={20} color="#c59b3f" />
-                    <div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.8rem', textTransform: 'uppercase' }}>Official Registered Address</div>
-                      <div style={{ color: '#fff', fontWeight: '600' }}>30 N Gould St # 68445</div>
-                      <div style={{ color: '#fff' }}>Sheridan, WY 82801</div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <MessageSquare size={20} color="#25d366" />
-                    <div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.8rem', textTransform: 'uppercase' }}>WhatsApp Chat</div>
-                      <a 
-                        href="https://wa.me/966595822656" 
-                        target="_blank" 
-                        rel="noreferrer"
-                        style={{ color: '#25d366', fontWeight: '600', textDecoration: 'none' }}
-                      >
-                        (+966) 59 582 2656 (Instant)
-                      </a>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <Building2 size={20} color="#c59b3f" />
-                    <div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.8rem', textTransform: 'uppercase' }}>Management</div>
-                      <div style={{ color: '#fff' }}>MKB Ventures Global LLC</div>
-                      <div style={{ color: '#b8aba0', fontSize: '0.85rem' }}>Management & Operations</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: '#fff', padding: '36px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '18px' }}>Send Us a Message</h3>
-                <form onSubmit={handleFormSubmit} className="modal-form">
-                  <div className="form-group">
-                    <label className="form-label">Full Name *</label>
-                    <input type="text" required placeholder="Your name" className="form-input" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Email Address *</label>
-                    <input type="email" required placeholder="your.email@example.com" className="form-input" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Subject</label>
-                    <input type="text" placeholder="Wholesale Inquiry / Catalog" className="form-input" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Message *</label>
-                    <textarea rows={4} placeholder="How can we assist you today?" required className="form-textarea"></textarea>
-                  </div>
-                  <button type="submit" className="btn-submit-modal">
-                    Send Message
-                  </button>
-                </form>
-
-                {formSubmitted && (
-                  <div style={{ marginTop: '16px', padding: '12px', background: '#ecfdf5', color: '#065f46', borderRadius: '8px', fontSize: '0.9rem' }}>
-                    Thank you! Your message has been received by MKB Ventures Global LLC. We will reply within 24 hours.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 3. FOOTER AS EXACTLY SPECIFIED BY USER */}
-      <footer className="site-footer">
+      {/* =========================================================================
+          SITE FOOTER (EXACT REPLICA OF LIVE FOOTER)
+         ========================================================================= */}
+      <footer className="site-footer" style={{ background: '#0e1a3f', color: '#ffffff' }}>
         <div className="footer-container">
           <div className="footer-brand">
-            <img src={logoImg} alt="MKB Ventures Global LLC Logo" className="footer-logo-img" />
-            <h3>MKB Ventures Global LLC</h3>
-            <p>
-              Quality products online. Sourcing and distribution dedicated to supplying top tier merchandise with transparent global logistics.
+            <img src={logoImg} alt="Ehthesham Ventures LLC Logo" className="footer-logo-img" />
+            <h3 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '10px' }}>{companyInfo.name}</h3>
+            <p style={{ color: '#cbd5e1', lineHeight: '1.6', fontSize: '0.92rem' }}>
+              {companyInfo.heroDescription}
             </p>
-            <div style={{ marginTop: '16px', fontSize: '0.85rem', color: '#cbd5e1' }}>
-              <div><strong>Registered Address:</strong> 30 N Gould St # 68445 Sheridan, WY 82801</div>
-              <div><strong>Management:</strong> MKB Ventures Global LLC</div>
-              <div><strong>Trade Desk Hotline:</strong> (+966) 59 582 2656 • info@mkbventuresgloballlc.com</div>
+            <div style={{ marginTop: '16px', fontSize: '0.85rem', color: '#94a3b8' }}>
+              <div><strong>Address:</strong> {companyInfo.address}</div>
+              <div><strong>Hours:</strong> {companyInfo.hours}</div>
+              <div><strong>Hotline:</strong> {companyInfo.phone} • {companyInfo.email}</div>
             </div>
           </div>
 
           <div className="footer-col">
-            <h4>Menu</h4>
+            <h4 style={{ color: '#F5C66A' }}>Menu</h4>
             <ul>
               <li><a href="#home" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>Home</a></li>
-              <li><a href="#shop" onClick={(e) => { e.preventDefault(); navigateTo('home'); const el = document.getElementById('featured-products-section'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}>Shop</a></li>
-              <li><a href="#about" onClick={(e) => { e.preventDefault(); navigateTo('about'); }}>About</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); navigateTo('contact'); }}>Contact</a></li>
+              <li><a href="#about" onClick={(e) => { e.preventDefault(); navigateTo('about'); }}>About Us</a></li>
+              <li><a href="#business" onClick={(e) => { e.preventDefault(); navigateTo('business'); }}>Our Business</a></li>
+              <li><a href="#categories" onClick={(e) => { e.preventDefault(); navigateTo('categories'); }}>Product Categories</a></li>
+              <li><a href="#shop" onClick={(e) => { e.preventDefault(); navigateTo('shop'); }}>Shop</a></li>
+              <li><a href="#contact" onClick={(e) => { e.preventDefault(); navigateTo('contact'); }}>Contact Us</a></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h4>Contacts</h4>
+            <h4 style={{ color: '#F5C66A' }}>Contacts</h4>
             <ul style={{ marginBottom: '20px' }}>
               <li>
-                <a href="mailto:info@mkbventuresgloballlc.com">
-                  info@mkbventuresgloballlc.com
+                <a href={`mailto:${companyInfo.email}`}>
+                  {companyInfo.email}
                 </a>
               </li>
               <li>
-                <a href="tel:+966595822656">
-                  (+966) 59 582 2656
+                <a href={`tel:${companyInfo.phoneRaw}`}>
+                  {companyInfo.phone}
                 </a>
               </li>
             </ul>
 
-            <h4 style={{ marginTop: '16px' }}>Socials</h4>
+            <h4 style={{ color: '#F5C66A', marginTop: '16px' }}>Socials</h4>
             <ul className="footer-social-links">
-              <li><a href="https://facebook.com/" target="_blank" rel="noreferrer">Facebook</a></li>
-              <li><a href="https://instagram.com/" target="_blank" rel="noreferrer">Instagram</a></li>
-              <li><a href="https://tiktok.com/" target="_blank" rel="noreferrer">TikTok</a></li>
+              <li><a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a></li>
+              <li><a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a></li>
+              <li><a href="https://tiktok.com" target="_blank" rel="noreferrer">TikTok</a></li>
+              <li><a href={companyInfo.whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h4>Subscribe to our newsletter</h4>
+            <h4 style={{ color: '#F5C66A' }}>Subscribe to our newsletter</h4>
             <p style={{ fontSize: '0.85rem', marginBottom: '14px', color: '#cbd5e1' }}>
-              Receive exclusive price updates, catalog drops, and seasonal availability lists.
+              Stay updated with product arrivals and sourcing opportunities.
             </p>
             <form onSubmit={handleNewsletterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8' }}>EMAIL *</label>
+              <label style={{ fontSize: '0.78rem', color: '#94a3b8' }}>EMAIL *</label>
               <input 
                 type="email" 
                 required 
-                placeholder="Enter your email address"
+                placeholder="Enter your email"
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 style={{
@@ -1653,8 +1837,8 @@ export default function App() {
               <button 
                 type="submit" 
                 style={{
-                  background: 'linear-gradient(135deg, #d4af37 0%, #c59b3f 100%)',
-                  color: '#0c2338',
+                  background: 'linear-gradient(135deg, #F5C66A 0%, #D97706 100%)',
+                  color: '#0e1a3f',
                   padding: '12px',
                   borderRadius: '6px',
                   border: 'none',
@@ -1662,7 +1846,7 @@ export default function App() {
                   cursor: 'pointer',
                   marginTop: '6px',
                   letterSpacing: '0.02em',
-                  boxShadow: '0 4px 14px rgba(197, 155, 63, 0.25)'
+                  boxShadow: '0 4px 14px rgba(217, 119, 6, 0.25)'
                 }}
               >
                 Subscribe
@@ -1671,7 +1855,7 @@ export default function App() {
 
             {newsletterSuccess && (
               <div style={{ marginTop: '10px', color: '#4ade80', fontSize: '0.82rem' }}>
-                ✓ Thank you for subscribing to our wholesale bulletin!
+                ✓ Thank you for subscribing to Ehthesham Ventures LLC!
               </div>
             )}
           </div>
@@ -1679,23 +1863,25 @@ export default function App() {
 
         <div className="footer-bottom">
           <div>
-            © 2026 <strong>MKB VENTURES GLOBAL LLC</strong>. All rights reserved.
+            © 2026 <strong>{companyInfo.legalName}</strong>. All rights reserved.
           </div>
-          <div style={{ color: '#64748b' }}>
-            Managed by MKB Ventures Global LLC • 30 N Gould St # 68445 Sheridan, WY 82801
+          <div style={{ color: '#94a3b8' }}>
+            {companyInfo.address}
           </div>
         </div>
       </footer>
 
-      {/* CART DRAWER SLIDE-OVER */}
+      {/* =========================================================================
+          CART DRAWER SLIDE-OVER
+         ========================================================================= */}
       {cartOpen && (
         <div className="cart-backdrop" onClick={() => setCartOpen(false)}>
           <div className="cart-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="cart-drawer-header">
               <div className="cart-header-title">
-                <ShoppingBag size={20} color="#1e7087" />
+                <ShoppingBag size={20} color="#1e3a8a" />
                 <h3>Your Wholesale Cart</h3>
-                <span className="cart-count-pill">{totalCartItems} units</span>
+                <span className="cart-count-pill">{totalCartItems} items</span>
               </div>
               <button className="cart-close-btn" onClick={() => setCartOpen(false)}>
                 <X size={20} />
@@ -1709,16 +1895,16 @@ export default function App() {
                     <ShoppingCart size={48} strokeWidth={1.5} color="#94a3b8" />
                   </div>
                   <h4>Your Cart is Empty</h4>
-                  <p>Browse our catalog and add wholesale products to calculate tiered totals or place direct orders.</p>
+                  <p>Browse our categories and add products to your cart for direct ordering.</p>
                   <button 
                     className="btn-hero-primary" 
                     style={{ marginTop: '16px' }}
                     onClick={() => {
                       setCartOpen(false);
-                      navigateTo('home');
+                      navigateTo('shop');
                     }}
                   >
-                    Explore Wholesale Catalog
+                    Explore Shop
                   </button>
                 </div>
               ) : (
@@ -1802,13 +1988,13 @@ export default function App() {
                     <span>Estimated Subtotal:</span>
                     <strong className="summary-amount">₨ {cartSubtotal.toLocaleString()}</strong>
                   </div>
-                  <p className="summary-note">Wholesale tiered rates and freight confirmed upon order dispatch.</p>
+                  <p className="summary-note">Wholesale quantities and terms confirmed upon inquiry dispatch.</p>
                 </div>
 
                 <div className="cart-footer-actions">
                   <a 
-                    href={`https://wa.me/966595822656?text=${encodeURIComponent(
-                      `Hello MKB Ventures Global LLC, I want to place an order:\n\n` +
+                    href={`https://wa.me/+9669362206795?text=${encodeURIComponent(
+                      `Hello Ehthesham Ventures LLC, I want to place a wholesale order:\n\n` +
                       cart.map(i => `• ${i.product.name} (SKU: ${i.product.sku}) - Qty: ${i.quantity} x ${i.product.price} = ₨ ${(i.product.priceNumeric * i.quantity).toLocaleString()}`).join('\n') +
                       `\n\nTotal Estimated: ₨ ${cartSubtotal.toLocaleString()}\nTotal Units: ${totalCartItems}`
                     )}`}
@@ -1880,10 +2066,10 @@ export default function App() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Requested Quantity (Minimum: {selectedProduct.minOrder})</label>
-                    <input type="text" placeholder={`e.g. 20 Cases / 1 Pallet`} className="form-input" required />
+                    <input type="text" placeholder={`e.g. 25 Units / 1 Case`} className="form-input" required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Destination Port / Delivery Zip Code</label>
+                    <label className="form-label">Destination Location / Zip Code</label>
                     <input type="text" placeholder="City, State / Country" className="form-input" required />
                   </div>
                   <button type="submit" className="btn-submit-modal">
@@ -1895,9 +2081,9 @@ export default function App() {
 
             {modalType === 'partner' && (
               <>
-                <h3 className="modal-title">Wholesale Partnership Today</h3>
+                <h3 className="modal-title">Partner with Ehthesham Ventures LLC</h3>
                 <p className="modal-subtitle">
-                  Connect with MKB Ventures Global LLC executive desk.
+                  Connect with our sourcing desk for wholesale distribution and retail supply.
                 </p>
                 <form onSubmit={handleFormSubmit} className="modal-form">
                   <div className="form-group">
@@ -1906,7 +2092,7 @@ export default function App() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Business / Company Name *</label>
-                    <input type="text" required placeholder="Company LLC" className="form-input" />
+                    <input type="text" required placeholder="Your company or business" className="form-input" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Email *</label>
@@ -1914,25 +2100,25 @@ export default function App() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Phone / WhatsApp *</label>
-                    <input type="tel" required placeholder="(+966) 59 582 2656 or US line" className="form-input" />
+                    <input type="tel" required placeholder="(+966) 9362206795 or local line" className="form-input" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Categories of Interest</label>
                     <select className="form-select">
                       <option>All Product Categories</option>
-                      <option>Automotive Essentials</option>
-                      <option>Baby Care Favorites</option>
-                      <option>Beauty and Personal Care</option>
-                      <option>Grocery and Gourmet</option>
-                      <option>Home and Everyday Finds</option>
+                      <option>Beauty & Personal Care</option>
+                      <option>Health & Household</option>
+                      <option>Home & Kitchen</option>
+                      <option>Office Products</option>
+                      <option>Pet Care Essentials</option>
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Notes / Expected Order Size</label>
-                    <textarea rows={3} placeholder="Tell us about your distribution needs..." className="form-textarea"></textarea>
+                    <label className="form-label">Notes / Wholesale Requirements</label>
+                    <textarea rows={3} placeholder="Tell us about your sourcing needs and resale platforms..." className="form-textarea"></textarea>
                   </div>
                   <button type="submit" className="btn-submit-modal">
-                    Connect With MKB Ventures
+                    Connect With Ehthesham Ventures
                   </button>
                 </form>
               </>
@@ -1955,22 +2141,22 @@ export default function App() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Business Email *</label>
-                    <input type="email" required placeholder="procurement@company.com" className="form-input" />
+                    <input type="email" required placeholder="buyer@example.com" className="form-input" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">WhatsApp / Phone Number *</label>
                     <input type="tel" required placeholder="(+966) / (+1) Phone" className="form-input" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Delivery / Destination Address *</label>
+                    <label className="form-label">Delivery Address *</label>
                     <input type="text" required placeholder="Warehouse address, City, Country" className="form-input" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Order Notes / Custom Pallet Instructions</label>
-                    <textarea rows={2} placeholder="Optional delivery instructions, dock requirements..." className="form-textarea"></textarea>
+                    <label className="form-label">Order Notes / Custom Instructions</label>
+                    <textarea rows={2} placeholder="Optional delivery instructions, packaging requirements..." className="form-textarea"></textarea>
                   </div>
                   <button type="submit" className="btn-submit-modal">
-                    Confirm & Place Purchase Order (₨ {cartSubtotal.toLocaleString()})
+                    Confirm & Submit Order (₨ {cartSubtotal.toLocaleString()})
                   </button>
                 </form>
               </>
@@ -1980,8 +2166,8 @@ export default function App() {
               <div style={{ marginTop: '20px', padding: '16px', background: '#ecfdf5', color: '#065f46', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <CheckCircle2 size={24} color="#059669" />
                 <div>
-                  <strong>Order / Inquiry Dispatched!</strong>
-                  <p style={{ fontSize: '0.85rem' }}>MKB Ventures Global LLC and our logistics desk will confirm your order and send invoice details via WhatsApp and email promptly.</p>
+                  <strong>Inquiry / Order Received!</strong>
+                  <p style={{ fontSize: '0.85rem' }}>Ehthesham Ventures LLC trade desk will confirm your request and reach out promptly via email and WhatsApp.</p>
                 </div>
               </div>
             )}
@@ -1991,4 +2177,3 @@ export default function App() {
     </div>
   );
 }
-
