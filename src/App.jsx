@@ -1664,7 +1664,7 @@ export default function App() {
                     </div>
 
                     <div className="subtotal-preview">
-                      Subtotal: <strong>₨ {(activeProduct.priceNumeric * detailQuantity).toLocaleString()}</strong>
+                      Subtotal: <strong>${(activeProduct.priceNumeric * detailQuantity).toLocaleString()}</strong>
                     </div>
                   </div>
 
@@ -1678,7 +1678,7 @@ export default function App() {
                     </button>
 
                     <a 
-                      href={`https://wa.me/+9669362206795?text=${encodeURIComponent(`Hello Ehthesham Ventures LLC, I want to inquire/order ${detailQuantity}x ${activeProduct.name} (SKU: ${activeProduct.sku}, Total: ₨ ${(activeProduct.priceNumeric * detailQuantity).toLocaleString()}).`)}`}
+                      href={`https://wa.me/+9669362206795?text=${encodeURIComponent(`Hello Ehthesham Ventures LLC, I want to inquire/order ${detailQuantity}x ${activeProduct.name} (SKU: ${activeProduct.sku}, Total: $${(activeProduct.priceNumeric * detailQuantity).toLocaleString()}).`)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="btn-detail-whatsapp"
@@ -2032,7 +2032,7 @@ export default function App() {
                         </h4>
                         <div className="cart-item-price-row">
                           <span className="cart-unit-price">{item.product.price} / unit</span>
-                          <span className="cart-line-total">₨ {(item.product.priceNumeric * item.quantity).toLocaleString()}</span>
+                          <span className="cart-line-total">${(item.product.priceNumeric * item.quantity).toLocaleString()}</span>
                         </div>
                         <div className="cart-stepper-row">
                           <div className="cart-qty-stepper">
@@ -2076,7 +2076,7 @@ export default function App() {
                   </div>
                   <div className="summary-row subtotal">
                     <span>Estimated Subtotal:</span>
-                    <strong className="summary-amount">₨ {cartSubtotal.toLocaleString()}</strong>
+                    <strong className="summary-amount">${cartSubtotal.toLocaleString()}</strong>
                   </div>
                   <p className="summary-note">Wholesale quantities and terms confirmed upon inquiry dispatch.</p>
                 </div>
@@ -2085,8 +2085,8 @@ export default function App() {
                   <a 
                     href={`https://wa.me/+9669362206795?text=${encodeURIComponent(
                       `Hello Ehthesham Ventures LLC, I want to place a wholesale order:\n\n` +
-                      cart.map(i => `• ${i.product.name} (SKU: ${i.product.sku}) - Qty: ${i.quantity} x ${i.product.price} = ₨ ${(i.product.priceNumeric * i.quantity).toLocaleString()}`).join('\n') +
-                      `\n\nTotal Estimated: ₨ ${cartSubtotal.toLocaleString()}\nTotal Units: ${totalCartItems}`
+                      cart.map(i => `• ${i.product.name} (SKU: ${i.product.sku}) - Qty: ${i.quantity} x ${i.product.price} = $${(i.product.priceNumeric * i.quantity).toLocaleString()}`).join('\n') +
+                      `\n\nTotal Estimated: $${cartSubtotal.toLocaleString()}\nTotal Units: ${totalCartItems}`
                     )}`}
                     target="_blank"
                     rel="noreferrer"
@@ -2218,7 +2218,7 @@ export default function App() {
               <>
                 <h3 className="modal-title">Wholesale Checkout / Purchase Order</h3>
                 <p className="modal-subtitle">
-                  Submitting order for: <strong>{totalCartItems} units • Total: ₨ {cartSubtotal.toLocaleString()}</strong>
+                  Submitting order for: <strong>{totalCartItems} units • Total: ${cartSubtotal.toLocaleString()}</strong>
                 </p>
                 <form onSubmit={handleFormSubmit} className="modal-form">
                   <div className="form-group">
@@ -2246,7 +2246,7 @@ export default function App() {
                     <textarea rows={2} placeholder="Optional delivery instructions, packaging requirements..." className="form-textarea"></textarea>
                   </div>
                   <button type="submit" className="btn-submit-modal">
-                    Confirm & Submit Order (₨ {cartSubtotal.toLocaleString()})
+                    Confirm & Submit Order (${cartSubtotal.toLocaleString()})
                   </button>
                 </form>
               </>

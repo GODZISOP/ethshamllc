@@ -75,7 +75,7 @@ export const products = [
     category: 'beauty-care',
     categoryName: 'Beauty & Personal Care',
     sku: 'EV-BEAUTY-011',
-    price: '₨ 12',
+    price: '$12',
     priceNumeric: 12,
     packSize: 'Standard Retail Pack',
     availability: 'In Stock (Ready to Ship)',
@@ -95,9 +95,9 @@ export const products = [
       'Full supplier invoices and resale documentation support'
     ],
     tiers: [
-      { range: '1 - 19 Units', price: '₨ 12', discount: 'Base Rate' },
-      { range: '20 - 99 Units', price: '₨ 10', discount: '16% Wholesale' },
-      { range: '100+ Units', price: '₨ 8', discount: '33% Volume Pallet' }
+      { range: '1 - 19 Units', price: '$12', discount: 'Base Rate' },
+      { range: '20 - 99 Units', price: '$10', discount: '16% Wholesale' },
+      { range: '100+ Units', price: '$8', discount: '33% Volume Pallet' }
     ],
     specs: [
       { label: 'Category', value: 'Beauty & Personal Care' },
@@ -112,7 +112,7 @@ export const products = [
     category: 'office-products',
     categoryName: 'Office Products',
     sku: 'EV-OFFICE-017',
-    price: '₨ 7',
+    price: '$7',
     priceNumeric: 7,
     packSize: 'Workspace Multi-Pack',
     availability: 'In Stock (Ready to Ship)',
@@ -132,9 +132,9 @@ export const products = [
       'Flexible order quantities with rapid dispatch from Sheridan, WY'
     ],
     tiers: [
-      { range: '1 - 24 Units', price: '₨ 7', discount: 'Base Catalog' },
-      { range: '25 - 99 Units', price: '₨ 6', discount: '14% Bulk Pack' },
-      { range: '100+ Units', price: '₨ 5', discount: '28% Master Carton' }
+      { range: '1 - 24 Units', price: '$7', discount: 'Base Catalog' },
+      { range: '25 - 99 Units', price: '$6', discount: '14% Bulk Pack' },
+      { range: '100+ Units', price: '$5', discount: '28% Master Carton' }
     ],
     specs: [
       { label: 'Category', value: 'Office Products & Stationery' },
@@ -149,7 +149,7 @@ export const products = [
     category: 'health-household',
     categoryName: 'Health & Household',
     sku: 'EV-HOUSE-013',
-    price: '₨ 10',
+    price: '$10',
     priceNumeric: 10,
     packSize: 'Household Value Pack',
     availability: 'In Stock (Ready to Ship)',
@@ -169,9 +169,9 @@ export const products = [
       'Competitive B2B wholesale pricing with tiered discounts'
     ],
     tiers: [
-      { range: '1 - 19 Units', price: '₨ 10', discount: 'Standard Rate' },
-      { range: '20 - 99 Units', price: '₨ 8.5', discount: '15% Case Pack' },
-      { range: '100+ Units', price: '₨ 7', discount: '30% Pallet Tier' }
+      { range: '1 - 19 Units', price: '$10', discount: 'Standard Rate' },
+      { range: '20 - 99 Units', price: '$8.50', discount: '15% Case Pack' },
+      { range: '100+ Units', price: '$7', discount: '30% Pallet Tier' }
     ],
     specs: [
       { label: 'Category', value: 'Health & Household Essentials' },
@@ -186,7 +186,7 @@ export const products = [
     category: 'home-kitchen',
     categoryName: 'Home & Kitchen',
     sku: 'EV-KTCHN-015',
-    price: '₨ 18',
+    price: '$18',
     priceNumeric: 18,
     packSize: 'Multi-Piece Storage Set',
     availability: 'In Stock (Ready to Ship)',
@@ -206,9 +206,9 @@ export const products = [
       'High-demand consumer kitchen essential for online store resale'
     ],
     tiers: [
-      { range: '1 - 19 Units', price: '₨ 18', discount: 'Catalog Base' },
-      { range: '20 - 99 Units', price: '₨ 15', discount: '16% Merchant Pack' },
-      { range: '100+ Units', price: '₨ 13', discount: '27% Pallet Tier' }
+      { range: '1 - 19 Units', price: '$18', discount: 'Catalog Base' },
+      { range: '20 - 99 Units', price: '$15', discount: '16% Merchant Pack' },
+      { range: '100+ Units', price: '$13', discount: '27% Pallet Tier' }
     ],
     specs: [
       { label: 'Category', value: 'Home & Kitchen Storage' },
@@ -223,7 +223,7 @@ export const products = [
     category: 'pet-care',
     categoryName: 'Pet Care Essentials',
     sku: 'EV-PET-019',
-    price: '₨ 11',
+    price: '$11',
     priceNumeric: 11,
     packSize: 'Pet Comfort & Care Pack',
     availability: 'In Stock (Ready to Ship)',
@@ -243,9 +243,9 @@ export const products = [
       'Volume wholesale terms and express dispatch to fulfillment hubs'
     ],
     tiers: [
-      { range: '1 - 24 Units', price: '₨ 11', discount: 'Base Catalog' },
-      { range: '25 - 99 Units', price: '₨ 9.5', discount: '13% Volume Tier' },
-      { range: '100+ Units', price: '₨ 8', discount: '27% Pallet Rate' }
+      { range: '1 - 24 Units', price: '$11', discount: 'Base Catalog' },
+      { range: '25 - 99 Units', price: '$9.50', discount: '13% Volume Tier' },
+      { range: '100+ Units', price: '$8', discount: '27% Pallet Rate' }
     ],
     specs: [
       { label: 'Category', value: 'Pet Care & Accessories' },
