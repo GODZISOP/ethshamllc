@@ -181,7 +181,7 @@ export default function App() {
         <div className="main-nav">
           <div className="nav-brand" onClick={() => navigateTo('home')} style={{ cursor: 'pointer' }}>
             <img src={logoImg} alt="Ehthesham Ventures LLC Logo" className="brand-logo-img" />
-            <div>
+            <div className="nav-brand-text">
               <div className="brand-title">{companyInfo.name}</div>
               <div className="brand-subtitle">{companyInfo.tagline}</div>
             </div>
