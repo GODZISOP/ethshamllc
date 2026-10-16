@@ -264,11 +264,11 @@ export default function App() {
             </button>
 
             <button 
-              className="mobile-toggle-btn"
+              className={`mobile-toggle-btn ${mobileMenuOpen ? 'active' : ''}`}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
             >
-              <MenuIcon size={20} />
+              {mobileMenuOpen ? <X size={22} /> : <MenuIcon size={22} />}
             </button>
           </div>
         </div>
